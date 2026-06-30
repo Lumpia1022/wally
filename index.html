@@ -1544,7 +1544,7 @@
                         userLocation.lat = position.coords.latitude;
                         userLocation.lon = position.coords.longitude;
                         document.getElementById('location-text').textContent =
-                            ${userLocation.lat.toFixed(2)}°, ${userLocation.lon.toFixed(2)}°;
+                            ${userLocation.lat.toFixed(2)}°, ${userLocation.lon.toFixed(2)};
                         // Start fetching data in background
                         weatherPromise = fetchWeather();
                         forecastPromise = fetchForecast();
