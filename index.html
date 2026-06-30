@@ -1532,7 +1532,10 @@
     <script>
         // Global variables
         let userLocation = { lat: null, lon: null };
-        const API_BASE_URL = 'http://localhost:5000';
+        
+        // UPDATED: Pointing to your ngrok link
+        const API_BASE_URL = 'https://rectal-affirmably-suanne.ngrok-free.dev'; 
+        
         let weatherPromise = null;
         let forecastPromise = null;
 
@@ -1544,7 +1547,7 @@
                         userLocation.lat = position.coords.latitude;
                         userLocation.lon = position.coords.longitude;
                         document.getElementById('location-text').textContent =
-                            ${userLocation.lat.toFixed(2)}°, ${userLocation.lon.toFixed(2)};
+                            `${userLocation.lat.toFixed(2)}°, ${userLocation.lon.toFixed(2)}°`;
                         // Start fetching data in background
                         weatherPromise = fetchWeather();
                         forecastPromise = fetchForecast();
@@ -1611,21 +1614,25 @@
             }
         }
 
-        // Fetch weather
+        // Fetch weather (UPDATED: Added ngrok bypass header)
         async function fetchWeather() {
-            const response = await fetch(${API_BASE_URL}/weather?lat=${userLocation.lat}&lon=${userLocation.lon});
+            const response = await fetch(`${API_BASE_URL}/weather?lat=${userLocation.lat}&lon=${userLocation.lon}`, {
+                headers: { 'ngrok-skip-browser-warning': 'true' }
+            });
             return await response.json();
         }
 
-        // Fetch forecast
+        // Fetch forecast (UPDATED: Added ngrok bypass header)
         async function fetchForecast() {
-            const response = await fetch(${API_BASE_URL}/forecast?lat=${userLocation.lat}&lon=${userLocation.lon});
+            const response = await fetch(`${API_BASE_URL}/forecast?lat=${userLocation.lat}&lon=${userLocation.lon}`, {
+                headers: { 'ngrok-skip-browser-warning': 'true' }
+            });
             return await response.json();
         }
 
         // Fetch map
         function fetchMap() {
-            const mapUrl = https://embed.windy.com/embed2.html?lat=${userLocation.lat}&lon=${userLocation.lon}&zoom=8&level=surface&overlay=rain&menu=&message=&marker=&calendar=&pressure=&type=map&location=coordinates&detail=&detailLat=${userLocation.lat}&detailLon=${userLocation.lon}&metricWind=default&metricTemp=default&radarRange=-1;
+            const mapUrl = `https://embed.windy.com/embed2.html?lat=${userLocation.lat}&lon=${userLocation.lon}&zoom=8&level=surface&overlay=rain&menu=&message=&marker=&calendar=&pressure=&type=map&location=coordinates&detail=&detailLat=${userLocation.lat}&detailLon=${userLocation.lon}&metricWind=default&metricTemp=default&radarRange=-1`;
             document.getElementById('weather-map').src = mapUrl;
         }
 
@@ -1739,7 +1746,7 @@
             document.getElementById('comingSoonModal').classList.remove('active');
         }
 
-        // Prediction form
+        // Prediction form (UPDATED: Added ngrok bypass header)
         document.getElementById('prediction-form').addEventListener('submit', async (e) => {
             e.preventDefault();
 
@@ -1753,15 +1760,18 @@
             };
 
             try {
-                const response = await fetch(${API_BASE_URL}/predict, {
+                const response = await fetch(`${API_BASE_URL}/predict`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'ngrok-skip-browser-warning': 'true' // Bypasses ngrok warning page
+                    },
                     body: JSON.stringify(data)
                 });
 
                 const result = await response.json();
 
-                document.getElementById('yield-value').innerHTML = ${result.predicted_yield} <span>t/ha</span>;
+                document.getElementById('yield-value').innerHTML = `${result.predicted_yield} <span>t/ha</span>`;
                 document.getElementById('yield-category').textContent = result.category;
                 document.getElementById('prediction-result').classList.add('show');
 
@@ -1775,7 +1785,7 @@
         function showToast(message, type = 'info') {
             const toast = document.getElementById('toast');
             toast.textContent = message;
-            toast.className = toast ${type} show;
+            toast.className = `toast ${type} show`;
 
             setTimeout(() => {
                 toast.classList.remove('show');
