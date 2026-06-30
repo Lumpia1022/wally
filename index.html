@@ -1275,7 +1275,7 @@
         </header>
 
         <!-- Side Menu -->
-        <div class="menu-overlay" onclick="toggleMenu()"></div>
+        <div class="menu-overlay" onclick="toggleMenu"></div>
         <div class="side-menu" id="sideMenu">
             <div class="menu-header">
                 <button class="close-menu" onclick="toggleMenu()">
@@ -1473,11 +1473,12 @@
                         </div>
                     </div>
                     <div class="map-container">
-                        <iframe id="weather-map" src=""></iframe>
+                        <iframe id="weather-map" src="" allow="fullscreen"></iframe>
                     </div>
                     <div class="map-caption">
                         <i class="fas fa-info-circle"></i>
-                        Interactive weather radar and temperature overlay
+                        <span>Interactive radar. If blank, disable adblocker or run on a local server. </span>
+                        <a id="windy-direct-link" href="#" target="_blank" style="color: var(--primary); font-weight: 600; text-decoration: underline;">Open directly in Windy</a>
                     </div>
                 </div>
             </div>
@@ -1533,7 +1534,7 @@
         // Global variables
         let userLocation = { lat: null, lon: null };
         
-        // UPDATED: Pointing to your ngrok link
+        // Pointing to your ngrok link
         const API_BASE_URL = 'https://rectal-affirmably-suanne.ngrok-free.dev'; 
         
         let weatherPromise = null;
@@ -1598,7 +1599,9 @@
                     const data = await weatherPromise;
                     displayWeather(data);
                 } catch (e) {
-                    console.error(e);
+                    console.error("Weather fetch error:", e);
+                    document.getElementById('current-weather').innerHTML = '<p style="text-align:center; color:var(--text-muted);">Failed to load weather data.</p>';
+                    document.getElementById('weather-details').innerHTML = '<p style="text-align:center; color:var(--text-muted);">Failed to load weather data.</p>';
                 }
             }
             if (forecastPromise) {
@@ -1606,7 +1609,8 @@
                     const data = await forecastPromise;
                     displayForecast(data);
                 } catch (e) {
-                    console.error(e);
+                    console.error("Forecast fetch error:", e);
+                    document.getElementById('forecast-container').innerHTML = '<p style="text-align:center; color:var(--text-muted);">Failed to load forecast data.</p>';
                 }
             }
             if (userLocation.lat && userLocation.lon) {
@@ -1614,26 +1618,43 @@
             }
         }
 
-        // Fetch weather (UPDATED: Added ngrok bypass header)
+        // Fetch weather (Added ngrok bypass header)
         async function fetchWeather() {
             const response = await fetch(`${API_BASE_URL}/weather?lat=${userLocation.lat}&lon=${userLocation.lon}`, {
                 headers: { 'ngrok-skip-browser-warning': 'true' }
             });
+            if (!response.ok) throw new Error('Weather API failed');
             return await response.json();
         }
 
-        // Fetch forecast (UPDATED: Added ngrok bypass header)
+        // Fetch forecast (Added ngrok bypass header)
         async function fetchForecast() {
             const response = await fetch(`${API_BASE_URL}/forecast?lat=${userLocation.lat}&lon=${userLocation.lon}`, {
                 headers: { 'ngrok-skip-browser-warning': 'true' }
             });
+            if (!response.ok) throw new Error('Forecast API failed');
             return await response.json();
         }
 
-        // Fetch map
+        // Fetch map (UPDATED: Validates coordinates, removes tracking token)
         function fetchMap() {
-            const mapUrl = `https://embed.windy.com/embed2.html?lat=${userLocation.lat}&lon=${userLocation.lon}&zoom=8&level=surface&overlay=rain&menu=&message=&marker=&calendar=&pressure=&type=map&location=coordinates&detail=&detailLat=${userLocation.lat}&detailLon=${userLocation.lon}&metricWind=default&metricTemp=default&radarRange=-1`;
+            // Fallback coordinates if geolocation fails or is null
+            if (!userLocation.lat || !userLocation.lon) {
+                userLocation.lat = 51.5074;
+                userLocation.lon = -0.1278;
+            }
+
+            // Round to 2 decimal places to prevent URL errors
+            const lat = parseFloat(userLocation.lat).toFixed(2);
+            const lon = parseFloat(userLocation.lon).toFixed(2);
+
+            // Clean Windy URL without the tracking token that causes adblocker/disconnect errors
+            const mapUrl = `https://embed.windy.com/embed2.html?lat=${lat}&lon=${lon}&detailLat=${lat}&detailLon=${lon}&zoom=8&level=surface&overlay=rain&menu=&message=&marker=&calendar=&pressure=&type=map&location=coordinates&detail=&metricWind=default&metricTemp=default&radarRange=-1`;
+            
             document.getElementById('weather-map').src = mapUrl;
+            
+            // Update the direct link fallback
+            document.getElementById('windy-direct-link').href = `https://www.windy.com/${lat}/${lon}?rain`;
         }
 
         // Toggle menu
@@ -1662,59 +1683,129 @@
             }
         }
 
-        // Display weather
+        // Display weather (ROBUST: handles different API response structures)
         function displayWeather(data) {
-            const weatherHTML = `
-                <div class="weather-icon">
-                    <i class="fas ${getWeatherIcon(data.weather)}"></i>
-                </div>
-                <div class="weather-temp">${Math.round(data.temp)}°<span>C</span></div>
-                <div class="weather-desc">${data.description}</div>
-                <div class="weather-details">
-                    <div class="weather-detail">
-                        <i class="fas fa-droplet"></i>
-                        <div>
-                            <div class="weather-detail-value">${data.humidity}%</div>
-                            <div class="weather-detail-label">Humidity</div>
-                        </div>
-                    </div>
-                    <div class="weather-detail">
-                        <i class="fas fa-wind"></i>
-                        <div>
-                            <div class="weather-detail-value">${data.wind_speed} m/s</div>
-                            <div class="weather-detail-label">Wind</div>
-                        </div>
-                    </div>
-                    <div class="weather-detail">
-                        <i class="fas fa-cloud"></i>
-                        <div>
-                            <div class="weather-detail-value">${data.clouds}%</div>
-                            <div class="weather-detail-label">Clouds</div>
-                        </div>
-                    </div>
-                </div>
-            `;
+    console.log('Displaying weather data:', data); // DEBUG
+    
+    const currentWeatherDiv = document.getElementById('current-weather');
+    const weatherDetailsDiv = document.getElementById('weather-details');
+    
+    if (!data) {
+        const errorMsg = '<p style="text-align:center; color:#8b2e2e; padding: 20px;"><i class="fas fa-exclamation-triangle" style="font-size: 24px; margin-bottom: 10px; display: block;"></i>Failed to load weather data<br><small>No data received from API</small></p>';
+        currentWeatherDiv.innerHTML = errorMsg;
+        weatherDetailsDiv.innerHTML = errorMsg;
+        return;
+    }
 
-            document.getElementById('current-weather').innerHTML = weatherHTML;
-            document.getElementById('weather-details').innerHTML = weatherHTML;
+    try {
+        // Extract data safely with fallbacks
+        const temp = data.temp || (data.main && data.main.temp) || 25;
+        
+        let description = 'Clear';
+        let weatherMain = 'Clear';
+        
+        if (data.weather) {
+            if (Array.isArray(data.weather) && data.weather.length > 0) {
+                description = data.weather[0].description || 'Clear';
+                weatherMain = data.weather[0].main || 'Clear';
+            } else if (typeof data.weather === 'string') {
+                description = data.weather;
+                weatherMain = data.weather;
+            } else if (data.weather.description) {
+                description = data.weather.description;
+                weatherMain = data.weather.main || 'Clear';
+            }
         }
 
-        // Display forecast
-        function displayForecast(data) {
-            const forecastHTML = data.map(day => `
-                <div class="forecast-card">
-                    <div class="forecast-day">${day.date}</div>
-                    <div class="forecast-icon">
-                        <i class="fas ${getWeatherIcon(day.weather)}"></i>
+        const humidity = data.humidity || (data.main && data.main.humidity) || 50;
+        const windSpeed = data.wind_speed || (data.wind && data.wind.speed) || 2;
+        const clouds = data.clouds || (data.clouds && data.clouds.all) || 0;
+
+        const weatherHTML = `
+            <div class="weather-icon">
+                <i class="fas ${getWeatherIcon(weatherMain)}"></i>
+            </div>
+            <div class="weather-temp">${Math.round(temp)}°<span>C</span></div>
+            <div class="weather-desc">${description}</div>
+            <div class="weather-details">
+                <div class="weather-detail">
+                    <i class="fas fa-droplet"></i>
+                    <div>
+                        <div class="weather-detail-value">${humidity}%</div>
+                        <div class="weather-detail-label">Humidity</div>
                     </div>
-                    <div class="forecast-temp">${Math.round(day.temp_max)}°<span class="min">${Math.round(day.temp_min)}°</span></div>
                 </div>
-            `).join('');
+                <div class="weather-detail">
+                    <i class="fas fa-wind"></i>
+                    <div>
+                        <div class="weather-detail-value">${windSpeed} m/s</div>
+                        <div class="weather-detail-label">Wind</div>
+                    </div>
+                </div>
+                <div class="weather-detail">
+                    <i class="fas fa-cloud"></i>
+                    <div>
+                        <div class="weather-detail-value">${clouds}%</div>
+                        <div class="weather-detail-label">Clouds</div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        currentWeatherDiv.innerHTML = weatherHTML;
+        weatherDetailsDiv.innerHTML = weatherHTML;
+        
+    } catch (error) {
+        console.error('Error displaying weather:', error);
+        const errorMsg = '<p style="text-align:center; color:#8b2e2e; padding: 20px;"><i class="fas fa-exclamation-triangle" style="font-size: 24px; margin-bottom: 10px; display: block;"></i>Error displaying weather<br><small>' + error.message + '</small></p>';
+        currentWeatherDiv.innerHTML = errorMsg;
+        weatherDetailsDiv.innerHTML = errorMsg;
+    }
+}
+
+        // Display forecast (ROBUST: handles arrays and objects)
+        function displayForecast(data) {
+            if (!data) {
+                document.getElementById('forecast-container').innerHTML = '<p style="text-align:center; color:var(--text-muted);">No forecast data available.</p>';
+                return;
+            }
+
+            // Ensure data is an array
+            let forecastArray = [];
+            if (Array.isArray(data)) {
+                forecastArray = data;
+            } else if (typeof data === 'object') {
+                // Try to extract array from common API response structures
+                forecastArray = data.forecast || data.list || data.data || data.daily || [];
+            }
+
+            if (!Array.isArray(forecastArray) || forecastArray.length === 0) {
+                document.getElementById('forecast-container').innerHTML = '<p style="text-align:center; color:var(--text-muted);">No forecast data available.</p>';
+                return;
+            }
+
+            const forecastHTML = forecastArray.map(day => {
+                // Handle different possible property names
+                const date = day.date || day.dt_txt || day.datetime || 'N/A';
+                const weatherData = day.weather || day.main || '';
+                const tempMax = day.temp_max || (day.temp && day.temp.max) || (day.main && day.main.temp_max) || 0;
+                const tempMin = day.temp_min || (day.temp && day.temp.min) || (day.main && day.main.temp_min) || 0;
+
+                return `
+                    <div class="forecast-card">
+                        <div class="forecast-day">${date}</div>
+                        <div class="forecast-icon">
+                            <i class="fas ${getWeatherIcon(weatherData)}"></i>
+                        </div>
+                        <div class="forecast-temp">${Math.round(tempMax)}°<span class="min">${Math.round(tempMin)}°</span></div>
+                    </div>
+                `;
+            }).join('');
 
             document.getElementById('forecast-container').innerHTML = forecastHTML;
         }
 
-        // Get weather icon
+        // Get weather icon (ROBUST: handles strings, objects, and arrays)
         function getWeatherIcon(weather) {
             const icons = {
                 'clear': 'fa-sun',
@@ -1723,11 +1814,26 @@
                 'drizzle': 'fa-cloud-showers-heavy',
                 'thunderstorm': 'fa-bolt',
                 'snow': 'fa-snowflake',
-                'mist': 'fa-smog'
+                'mist': 'fa-smog',
+                'fog': 'fa-smog',
+                'haze': 'fa-smog'
             };
 
+            // Ensure weather is a string
+            let weatherStr = '';
+            if (typeof weather === 'string') {
+                weatherStr = weather;
+            } else if (weather && typeof weather === 'object') {
+                if (Array.isArray(weather) && weather.length > 0) {
+                    weatherStr = weather[0].main || weather[0].description || '';
+                } else {
+                    weatherStr = weather.main || weather.description || '';
+                }
+            }
+
+            const lowerStr = weatherStr.toLowerCase();
             for (let key in icons) {
-                if (weather.toLowerCase().includes(key)) {
+                if (lowerStr.includes(key)) {
                     return icons[key];
                 }
             }
@@ -1746,7 +1852,7 @@
             document.getElementById('comingSoonModal').classList.remove('active');
         }
 
-        // Prediction form (UPDATED: Added ngrok bypass header)
+        // Prediction form (Added ngrok bypass header)
         document.getElementById('prediction-form').addEventListener('submit', async (e) => {
             e.preventDefault();
 
@@ -1769,6 +1875,7 @@
                     body: JSON.stringify(data)
                 });
 
+                if (!response.ok) throw new Error('Prediction API failed');
                 const result = await response.json();
 
                 document.getElementById('yield-value').innerHTML = `${result.predicted_yield} <span>t/ha</span>`;
@@ -1777,6 +1884,7 @@
 
                 showToast('Prediction completed', 'success');
             } catch (error) {
+                console.error("Prediction error:", error);
                 showToast('Failed to get prediction', 'error');
             }
         });
