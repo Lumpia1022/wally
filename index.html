@@ -1,0 +1,1793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>WAKAY - Smart Agriculture</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --primary: #0f3d2e;
+            --primary-light: #1a5c47;
+            --primary-soft: #e8f0ec;
+            --accent: #c9a876;
+            --accent-soft: #f5ede0;
+            --cream: #faf9f6;
+            --surface: #ffffff;
+            --border: #eceae4;
+            --border-strong: #d8d5cd;
+            --text: #1a1a1a;
+            --text-muted: #6b6b6b;
+            --text-soft: #9a9a9a;
+            --success: #2d7a5f;
+            --shadow-sm: 0 1px 2px rgba(15, 61, 46, 0.04);
+            --shadow-md: 0 4px 20px rgba(15, 61, 46, 0.06);
+            --shadow-lg: 0 20px 60px rgba(15, 61, 46, 0.12);
+        }
+
+        html, body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--cream);
+            color: var(--text);
+            overflow-x: hidden;
+            font-size: 15px;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ===== Splash Screen ===== */
+        #splash {
+            position: fixed;
+            inset: 0;
+            background: var(--primary);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            transition: opacity 0.6s ease;
+            overflow: hidden;
+        }
+
+        #splash::before {
+            content: '';
+            position: absolute;
+            top: -30%;
+            right: -20%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(201, 168, 118, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        #splash::after {
+            content: '';
+            position: absolute;
+            bottom: -20%;
+            left: -15%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(201, 168, 118, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .splash-logo-wrapper {
+            width: 120px;
+            height: 120px;
+            background: var(--surface);
+            border-radius: 32px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 28px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: logoFloat 3s ease-in-out infinite;
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .splash-logo-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 32px;
+        }
+
+        .splash-brand {
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .splash-brand h1 {
+            font-family: 'Fraunces', serif;
+            color: var(--cream);
+            font-size: 38px;
+            letter-spacing: 8px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .splash-brand .divider {
+            width: 32px;
+            height: 1px;
+            background: var(--accent);
+            margin: 0 auto 14px;
+        }
+
+        .splash-brand p {
+            color: rgba(250, 249, 246, 0.6);
+            font-size: 11px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+
+        .splash-loader {
+            margin-top: 40px;
+            width: 32px;
+            height: 32px;
+            border: 2px solid rgba(250, 249, 246, 0.15);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.9s linear infinite;
+            position: relative;
+            z-index: 1;
+        }
+
+        @keyframes logoFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ===== Welcome Page ===== */
+        #welcome {
+            position: fixed;
+            inset: 0;
+            background: var(--cream);
+            z-index: 9000;
+            overflow-y: auto;
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        #welcome.active {
+            display: block;
+        }
+
+        .welcome-close {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            z-index: 100;
+            transition: all 0.2s;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .welcome-close:active {
+            transform: scale(0.92);
+            background: var(--primary-soft);
+        }
+
+        .welcome-content {
+            max-width: 560px;
+            margin: 0 auto;
+            padding: 60px 28px 40px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .welcome-phase {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            background: var(--accent-soft);
+            color: var(--primary);
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            align-self: flex-start;
+            margin-bottom: 24px;
+        }
+
+        .welcome-phase .dot {
+            width: 6px;
+            height: 6px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        .welcome-logo {
+            width: 72px;
+            height: 72px;
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .welcome-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .welcome-title {
+            font-family: 'Fraunces', serif;
+            font-size: 36px;
+            color: var(--primary);
+            line-height: 1.15;
+            margin-bottom: 16px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        .welcome-subtitle {
+            font-size: 15px;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 32px;
+        }
+
+        .welcome-features {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        .welcome-feature {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 18px;
+            transition: all 0.2s;
+        }
+
+        .welcome-feature i {
+            font-size: 18px;
+            color: var(--primary);
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .welcome-feature h4 {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+
+        .welcome-feature p {
+            font-size: 11px;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .welcome-cta {
+            background: var(--primary);
+            color: var(--cream);
+            border: none;
+            padding: 16px;
+            border-radius: 14px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            letter-spacing: 0.3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 32px;
+            transition: all 0.2s;
+        }
+
+        .welcome-cta:active {
+            transform: translateY(1px);
+            background: var(--primary-light);
+        }
+
+        .welcome-credits {
+            margin-top: auto;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .welcome-credits .line {
+            font-size: 11px;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .welcome-credits .line strong {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .welcome-credits .dpml {
+            margin-top: 12px;
+            font-size: 10px;
+            color: var(--text-soft);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* ===== Main App ===== */
+        #app {
+            display: none;
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+
+        /* ===== Header ===== */
+        .header {
+            background: var(--surface);
+            padding: 16px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .menu-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .menu-btn:active {
+            transform: scale(0.95);
+            background: var(--cream);
+        }
+
+        .brand {
+            font-family: 'Fraunces', serif;
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--primary);
+            letter-spacing: 3px;
+        }
+
+        .location-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 500;
+            padding: 6px 12px;
+            background: var(--cream);
+            border-radius: 20px;
+        }
+
+        .location-badge i {
+            color: var(--success);
+            font-size: 8px;
+        }
+
+        /* ===== Side Menu ===== */
+        .side-menu {
+            position: fixed;
+            top: 0;
+            left: -320px;
+            width: 300px;
+            height: 100%;
+            background: var(--surface);
+            z-index: 2000;
+            transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .side-menu.active {
+            left: 0;
+        }
+
+        .menu-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(26, 26, 26, 0.4);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            z-index: 1500;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .menu-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .menu-header {
+            padding: 36px 28px 28px;
+            border-bottom: 1px solid var(--border);
+            position: relative;
+        }
+
+        .menu-header .menu-logo {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            overflow: hidden;
+            margin-bottom: 14px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .menu-header .menu-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .menu-header h2 {
+            font-family: 'Fraunces', serif;
+            font-size: 22px;
+            color: var(--primary);
+            letter-spacing: 3px;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .menu-header p {
+            font-size: 11px;
+            color: var(--text-muted);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .menu-items {
+            padding: 14px 12px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .menu-item {
+            padding: 13px 16px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text);
+            border-radius: 12px;
+            margin-bottom: 2px;
+            font-weight: 500;
+            font-size: 14px;
+            position: relative;
+        }
+
+        .menu-item:hover {
+            background: var(--cream);
+        }
+
+        .menu-item.active {
+            background: var(--primary);
+            color: var(--cream);
+        }
+
+        .menu-item.active i {
+            color: var(--accent);
+        }
+
+        .menu-item i {
+            width: 20px;
+            font-size: 14px;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        .menu-item .soon-badge {
+            margin-left: auto;
+            font-size: 9px;
+            padding: 3px 8px;
+            background: var(--accent-soft);
+            color: var(--primary);
+            border-radius: 10px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .menu-item.active .soon-badge {
+            background: rgba(201, 168, 118, 0.2);
+            color: var(--accent);
+        }
+
+        .close-menu {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--cream);
+            border: none;
+            color: var(--text);
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+
+        .close-menu:active {
+            transform: scale(0.9);
+        }
+
+        /* ===== Content ===== */
+        .content {
+            padding: 24px 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .page-title {
+            font-family: 'Fraunces', serif;
+            font-size: 28px;
+            color: var(--primary);
+            margin-bottom: 4px;
+            font-weight: 600;
+            letter-spacing: -0.3px;
+        }
+
+        .page-subtitle {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 22px;
+            margin-bottom: 14px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+        }
+
+        .card-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-title i {
+            color: var(--primary);
+            font-size: 12px;
+        }
+
+        .card-badge {
+            font-size: 9px;
+            padding: 4px 10px;
+            background: var(--primary-soft);
+            color: var(--primary);
+            border-radius: 20px;
+            font-weight: 600;
+            letter-spacing: 0.8px;
+        }
+
+        .card-badge.live {
+            background: var(--success);
+            color: var(--cream);
+        }
+
+        .card-badge.live::before {
+            content: '';
+            display: inline-block;
+            width: 5px;
+            height: 5px;
+            background: var(--cream);
+            border-radius: 50%;
+            margin-right: 6px;
+            animation: pulse 2s ease-in-out infinite;
+            vertical-align: middle;
+        }
+
+        /* ===== Weather Display ===== */
+        .weather-main {
+            text-align: center;
+            padding: 8px 0;
+        }
+
+        .weather-icon {
+            font-size: 56px;
+            color: var(--accent);
+            margin-bottom: 4px;
+            line-height: 1;
+        }
+
+        .weather-temp {
+            font-family: 'Fraunces', serif;
+            font-size: 52px;
+            font-weight: 600;
+            color: var(--primary);
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .weather-temp span {
+            font-size: 24px;
+            color: var(--text-soft);
+            font-family: 'Inter', sans-serif;
+            font-weight: 400;
+        }
+
+        .weather-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            text-transform: capitalize;
+        }
+
+        .weather-details {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            padding-top: 18px;
+            border-top: 1px solid var(--border);
+        }
+
+        .weather-detail {
+            text-align: center;
+        }
+
+        .weather-detail i {
+            font-size: 14px;
+            color: var(--primary);
+            margin-bottom: 6px;
+        }
+
+        .weather-detail-value {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 2px;
+        }
+
+        .weather-detail-label {
+            font-size: 10px;
+            color: var(--text-soft);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* ===== Form Elements ===== */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: var(--text);
+            font-size: 12px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 13px 14px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.2s;
+            background: var(--surface);
+            color: var(--text);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(15, 61, 46, 0.08);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-soft);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        /* ===== Buttons ===== */
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: 0.3px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--cream);
+        }
+
+        .btn-primary:active {
+            transform: translateY(1px);
+            background: var(--primary-light);
+        }
+
+        .btn-secondary {
+            background: var(--cream);
+            color: var(--primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:active {
+            background: var(--accent-soft);
+        }
+
+        /* ===== Prediction Result ===== */
+        .result-box {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            border-radius: 16px;
+            padding: 26px 22px;
+            text-align: center;
+            margin-top: 22px;
+            display: none;
+            color: var(--cream);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .result-box::before {
+            content: '';
+            position: absolute;
+            top: -40%;
+            right: -15%;
+            width: 180px;
+            height: 180px;
+            background: radial-gradient(circle, rgba(201, 168, 118, 0.2) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .result-box.show {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-label {
+            font-size: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            opacity: 0.8;
+            margin-bottom: 8px;
+            position: relative;
+        }
+
+        .result-value {
+            font-family: 'Fraunces', serif;
+            font-size: 42px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            position: relative;
+        }
+
+        .result-category {
+            display: inline-block;
+            padding: 6px 14px;
+            background: var(--accent);
+            color: var(--primary);
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+            position: relative;
+        }
+
+        /* ===== Coming Soon Modal ===== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(26, 26, 26, 0.5);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            z-index: 3000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal {
+            background: var(--surface);
+            border-radius: 24px;
+            padding: 32px 28px;
+            max-width: 380px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            animation: modalIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.9) translateY(20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--cream);
+            border: none;
+            color: var(--text);
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-icon {
+            width: 64px;
+            height: 64px;
+            background: var(--accent-soft);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+
+        .modal-icon i {
+            font-size: 26px;
+            color: var(--primary);
+        }
+
+        .modal h3 {
+            font-family: 'Fraunces', serif;
+            font-size: 22px;
+            color: var(--primary);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .modal p {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .modal-features {
+            text-align: left;
+            background: var(--cream);
+            border-radius: 14px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .modal-feature {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            font-size: 12px;
+            color: var(--text);
+        }
+
+        .modal-feature i {
+            color: var(--success);
+            font-size: 11px;
+        }
+
+        .modal-btn {
+            background: var(--primary);
+            color: var(--cream);
+            border: none;
+            padding: 13px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            width: 100%;
+        }
+
+        /* ===== Map ===== */
+        .map-container {
+            width: 100%;
+            height: 320px;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        .map-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .map-caption {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 11px;
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        /* ===== Loading ===== */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 32px 20px;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            width: 32px;
+            height: 32px;
+            border: 2px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 14px;
+        }
+
+        .loading p {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* ===== Footer ===== */
+        .footer {
+            text-align: center;
+            padding: 32px 20px 20px;
+            border-top: 1px solid var(--border);
+            margin-top: 32px;
+        }
+
+        .footer-brand {
+            font-family: 'Fraunces', serif;
+            font-size: 18px;
+            color: var(--primary);
+            letter-spacing: 4px;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .footer-text {
+            font-size: 11px;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+        }
+
+        /* ===== Pages ===== */
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== Forecast ===== */
+        .forecast-grid {
+            display: grid;
+            gap: 8px;
+        }
+
+        .forecast-card {
+            background: var(--cream);
+            padding: 16px 18px;
+            border-radius: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s;
+        }
+
+        .forecast-card:hover {
+            background: var(--accent-soft);
+        }
+
+        .forecast-day {
+            font-weight: 600;
+            color: var(--text);
+            font-size: 13px;
+            min-width: 80px;
+        }
+
+        .forecast-icon {
+            font-size: 22px;
+            color: var(--primary);
+        }
+
+        .forecast-temp {
+            font-weight: 600;
+            color: var(--text);
+            font-size: 13px;
+        }
+
+        .forecast-temp .min {
+            color: var(--text-soft);
+            margin-left: 6px;
+        }
+
+        /* ===== Toast ===== */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--text);
+            color: var(--cream);
+            padding: 13px 22px;
+            border-radius: 12px;
+            z-index: 4000;
+            opacity: 0;
+            transition: all 0.3s;
+            box-shadow: var(--shadow-lg);
+            font-size: 12px;
+            font-weight: 500;
+            max-width: 90%;
+            text-align: center;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast.error {
+            background: #8b2e2e;
+        }
+
+        .toast.success {
+            background: var(--primary);
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 480px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .weather-details {
+                grid-template-columns: 1fr;
+                gap: 14px;
+            }
+
+            .weather-detail {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                text-align: left;
+                padding: 6px 0;
+            }
+
+            .weather-detail i {
+                margin-bottom: 0;
+                width: 20px;
+            }
+
+            .splash-brand h1 {
+                font-size: 32px;
+            }
+
+            .welcome-title {
+                font-size: 28px;
+            }
+
+            .welcome-features {
+                grid-template-columns: 1fr;
+            }
+
+            .page-title {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Splash Screen -->
+    <div id="splash">
+        <div class="splash-logo-wrapper">
+            <img src="https://cdn.postimage.me/2026/06/30/original-1491e3ec98c36b04240844adc3cc63bb.webp" alt="WAKAY Logo">
+        </div>
+        <div class="splash-brand">
+            <h1>WAKAY</h1>
+            <div class="divider"></div>
+            <p>Smart Agriculture</p>
+        </div>
+        <div class="splash-loader"></div>
+    </div>
+
+    <!-- Welcome Page -->
+    <div id="welcome">
+        <button class="welcome-close" onclick="closeWelcome()">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="welcome-content">
+            <div class="welcome-phase">
+                <span class="dot"></span>
+                Experimental Phase 1
+            </div>
+
+            <div class="welcome-logo">
+                <img src="https://cdn.postimage.me/2026/06/30/original-1491e3ec98c36b04240844adc3cc63bb.webp" alt="WAKAY">
+            </div>
+
+            <h1 class="welcome-title">Welcome to WAKAY</h1>
+            <p class="welcome-subtitle">
+                An intelligent agriculture platform built to help farmers make faster, smarter decisions. WAKAY combines real-time environmental data with machine learning to identify pests early, predict their escalation, assess yield loss impact, and forecast crop output — protecting your harvest before it's too late.
+            </p>
+
+            <div class="welcome-features">
+                <div class="welcome-feature">
+                    <i class="fas fa-bug"></i>
+                    <h4>Pest Identification</h4>
+                    <p>Rapid detection of crop threats</p>
+                </div>
+                <div class="welcome-feature">
+                    <i class="fas fa-chart-line"></i>
+                    <h4>Escalation Analysis</h4>
+                    <p>Predict pest spread patterns</p>
+                </div>
+                <div class="welcome-feature">
+                    <i class="fas fa-triangle-exclamation"></i>
+                    <h4>Yield Loss Impact</h4>
+                    <p>Quantify potential damage</p>
+                </div>
+                <div class="welcome-feature">
+                    <i class="fas fa-seedling"></i>
+                    <h4>Yield Prediction</h4>
+                    <p>Forecast harvest output</p>
+                </div>
+            </div>
+
+            <button class="welcome-cta" onclick="closeWelcome()">
+                Enter Platform
+                <i class="fas fa-arrow-right"></i>
+            </button>
+
+            <div class="welcome-credits">
+                <div class="line">Developed by <strong>Randall Castillo</strong></div>
+                <div class="line">Powered by <strong>DPML</strong></div>
+                <div class="dpml">Data Processing &amp; Machine Learning Laboratory</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <button class="menu-btn" onclick="toggleMenu()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="brand">WAKAY</div>
+                <div class="location-badge">
+                    <i class="fas fa-circle"></i>
+                    <span id="location-text">Locating...</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Side Menu -->
+        <div class="menu-overlay" onclick="toggleMenu()"></div>
+        <div class="side-menu" id="sideMenu">
+            <div class="menu-header">
+                <button class="close-menu" onclick="toggleMenu()">
+                    <i class="fas fa-times"></i>
+                </button>
+                <div class="menu-logo">
+                    <img src="https://cdn.postimage.me/2026/06/30/original-1491e3ec98c36b04240844adc3cc63bb.webp" alt="WAKAY">
+                </div>
+                <h2>WAKAY</h2>
+                <p>Smart Agriculture</p>
+            </div>
+            <div class="menu-items">
+                <div class="menu-item active" onclick="showPage('dashboard', this)">
+                    <i class="fas fa-th-large"></i>
+                    <span>Dashboard</span>
+                </div>
+                <div class="menu-item" onclick="showPage('weather', this)">
+                    <i class="fas fa-cloud"></i>
+                    <span>Live Weather</span>
+                </div>
+                <div class="menu-item" onclick="showPage('prediction', this)">
+                    <i class="fas fa-seedling"></i>
+                    <span>Yield Prediction</span>
+                </div>
+                <div class="menu-item" onclick="showComingSoon('pest')">
+                    <i class="fas fa-bug"></i>
+                    <span>Pest Prediction</span>
+                    <span class="soon-badge">SOON</span>
+                </div>
+                <div class="menu-item" onclick="showPage('forecast', this)">
+                    <i class="fas fa-calendar"></i>
+                    <span>Weather Forecast</span>
+                </div>
+                <div class="menu-item" onclick="showPage('map', this)">
+                    <i class="fas fa-map"></i>
+                    <span>Weather Map</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Dashboard Page -->
+            <div id="dashboard" class="page active">
+                <h1 class="page-title">Dashboard</h1>
+                <p class="page-subtitle">Your farm at a glance</p>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-cloud"></i>
+                            Current Conditions
+                        </div>
+                        <span class="card-badge live">LIVE</span>
+                    </div>
+                    <div class="weather-main" id="current-weather">
+                        <div class="loading show">
+                            <div class="spinner"></div>
+                            <p>Loading weather data...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-bolt"></i>
+                            Quick Actions
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="showPage('prediction', document.querySelectorAll('.menu-item')[2])" style="margin-bottom: 8px;">
+                        <i class="fas fa-seedling"></i>
+                        Predict Crop Yield
+                    </button>
+                    <button class="btn btn-secondary" onclick="showComingSoon('pest')">
+                        <i class="fas fa-bug"></i>
+                        Pest Analysis
+                    </button>
+                </div>
+            </div>
+
+            <!-- Weather Page -->
+            <div id="weather" class="page">
+                <h1 class="page-title">Live Weather</h1>
+                <p class="page-subtitle">Real-time atmospheric data</p>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-cloud"></i>
+                            Conditions
+                        </div>
+                        <span class="card-badge live">LIVE</span>
+                    </div>
+                    <div id="weather-details">
+                        <div class="loading show">
+                            <div class="spinner"></div>
+                            <p>Fetching weather data...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Prediction Page -->
+            <div id="prediction" class="page">
+                <h1 class="page-title">Yield Prediction</h1>
+                <p class="page-subtitle">Sweet potato harvest forecast</p>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-seedling"></i>
+                            Input Parameters
+                        </div>
+                    </div>
+                    <form id="prediction-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Soil pH</label>
+                                <input type="number" step="0.1" class="form-input" id="soil-ph" placeholder="6.4" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Soil Moisture (%)</label>
+                                <input type="number" step="0.1" class="form-input" id="soil-moisture" placeholder="34.2" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Soil Temp (°C)</label>
+                                <input type="number" step="0.1" class="form-input" id="soil-temp" placeholder="27.5" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Nitrogen (N)</label>
+                                <input type="number" class="form-input" id="nitrogen" placeholder="70" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Phosphorus (P)</label>
+                                <input type="number" class="form-input" id="phosphorus" placeholder="25" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Potassium (K)</label>
+                                <input type="number" class="form-input" id="potassium" placeholder="180" required>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-calculator"></i>
+                            Predict Yield
+                        </button>
+                    </form>
+
+                    <div class="result-box" id="prediction-result">
+                        <div class="result-label">Predicted Yield</div>
+                        <div class="result-value" id="yield-value">0 <span>t/ha</span></div>
+                        <div class="result-category" id="yield-category">Moderate Yield</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Forecast Page -->
+            <div id="forecast" class="page">
+                <h1 class="page-title">Forecast</h1>
+                <p class="page-subtitle">5-day weather outlook</p>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-calendar"></i>
+                            Upcoming Days
+                        </div>
+                    </div>
+                    <div class="forecast-grid" id="forecast-container">
+                        <div class="loading show">
+                            <div class="spinner"></div>
+                            <p>Loading forecast...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Map Page -->
+            <div id="map" class="page">
+                <h1 class="page-title">Weather Map</h1>
+                <p class="page-subtitle">Interactive regional overview</p>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-map"></i>
+                            Radar View
+                        </div>
+                    </div>
+                    <div class="map-container">
+                        <iframe id="weather-map" src=""></iframe>
+                    </div>
+                    <div class="map-caption">
+                        <i class="fas fa-info-circle"></i>
+                        Interactive weather radar and temperature overlay
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-brand">WAKAY</div>
+            <div class="footer-text">Smart Agriculture Platform</div>
+            <div class="footer-text" style="margin-top: 6px; opacity: 0.7;">
+                © 2026 · Experimental Phase 1
+            </div>
+        </footer>
+    </div>
+
+    <!-- Coming Soon Modal -->
+    <div class="modal-overlay" id="comingSoonModal">
+        <div class="modal">
+            <button class="modal-close" onclick="closeModal()">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="modal-icon">
+                <i class="fas fa-bug"></i>
+            </div>
+            <h3>Pest Intelligence</h3>
+            <p>This feature is currently in development. Soon you'll be able to identify crop pests, predict their spread, and quantify potential yield loss.</p>
+            <div class="modal-features">
+                <div class="modal-feature">
+                    <i class="fas fa-check"></i>
+                    <span>AI-powered pest identification</span>
+                </div>
+                <div class="modal-feature">
+                    <i class="fas fa-check"></i>
+                    <span>Escalation risk forecasting</span>
+                </div>
+                <div class="modal-feature">
+                    <i class="fas fa-check"></i>
+                    <span>Yield loss impact analysis</span>
+                </div>
+                <div class="modal-feature">
+                    <i class="fas fa-check"></i>
+                    <span>Recommended treatment plans</span>
+                </div>
+            </div>
+            <button class="modal-btn" onclick="closeModal()">Got it</button>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // Global variables
+        let userLocation = { lat: null, lon: null };
+        const API_BASE_URL = 'http://localhost:5000';
+        let weatherPromise = null;
+        let forecastPromise = null;
+
+        // Start loading data immediately during splash
+        function preloadData() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        userLocation.lat = position.coords.latitude;
+                        userLocation.lon = position.coords.longitude;
+                        document.getElementById('location-text').textContent =
+                            ${userLocation.lat.toFixed(2)}°, ${userLocation.lon.toFixed(2)}°;
+                        // Start fetching data in background
+                        weatherPromise = fetchWeather();
+                        forecastPromise = fetchForecast();
+                        fetchMap();
+                    },
+                    () => {
+                        userLocation.lat = 51.5074;
+                        userLocation.lon = -0.1278;
+                        document.getElementById('location-text').textContent = 'Default';
+                        weatherPromise = fetchWeather();
+                        forecastPromise = fetchForecast();
+                        fetchMap();
+                    },
+                    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+                );
+            } else {
+                userLocation.lat = 51.5074;
+                userLocation.lon = -0.1278;
+                weatherPromise = fetchWeather();
+                forecastPromise = fetchForecast();
+                fetchMap();
+            }
+        }
+
+        // Splash screen
+        window.addEventListener('load', () => {
+            preloadData();
+            setTimeout(() => {
+                document.getElementById('splash').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('splash').style.display = 'none';
+                    document.getElementById('welcome').classList.add('active');
+                }, 600);
+            }, 2800);
+        });
+
+        // Close welcome
+        function closeWelcome() {
+            document.getElementById('welcome').classList.remove('active');
+            document.getElementById('app').style.display = 'block';
+            initializeApp();
+        }
+
+        // Initialize app (use preloaded data)
+        async function initializeApp() {
+            if (weatherPromise) {
+                try {
+                    const data = await weatherPromise;
+                    displayWeather(data);
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+            if (forecastPromise) {
+                try {
+                    const data = await forecastPromise;
+                    displayForecast(data);
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+            if (userLocation.lat && userLocation.lon) {
+                showToast('Welcome to WAKAY', 'success');
+            }
+        }
+
+        // Fetch weather
+        async function fetchWeather() {
+            const response = await fetch(${API_BASE_URL}/weather?lat=${userLocation.lat}&lon=${userLocation.lon});
+            return await response.json();
+        }
+
+        // Fetch forecast
+        async function fetchForecast() {
+            const response = await fetch(${API_BASE_URL}/forecast?lat=${userLocation.lat}&lon=${userLocation.lon});
+            return await response.json();
+        }
+
+        // Fetch map
+        function fetchMap() {
+            const mapUrl = https://embed.windy.com/embed2.html?lat=${userLocation.lat}&lon=${userLocation.lon}&zoom=8&level=surface&overlay=rain&menu=&message=&marker=&calendar=&pressure=&type=map&location=coordinates&detail=&detailLat=${userLocation.lat}&detailLon=${userLocation.lon}&metricWind=default&metricTemp=default&radarRange=-1;
+            document.getElementById('weather-map').src = mapUrl;
+        }
+
+        // Toggle menu
+        function toggleMenu() {
+            document.getElementById('sideMenu').classList.toggle('active');
+            document.querySelector('.menu-overlay').classList.toggle('active');
+        }
+
+        // Show page
+        function showPage(pageName, menuItem) {
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
+
+            document.getElementById(pageName).classList.add('active');
+            if (menuItem) menuItem.classList.add('active');
+
+            if (document.getElementById('sideMenu').classList.contains('active')) {
+                toggleMenu();
+            }
+
+            if (pageName === 'weather' && weatherPromise) {
+                weatherPromise.then(displayWeather).catch(() => {});
+            }
+            if (pageName === 'forecast' && forecastPromise) {
+                forecastPromise.then(displayForecast).catch(() => {});
+            }
+        }
+
+        // Display weather
+        function displayWeather(data) {
+            const weatherHTML = `
+                <div class="weather-icon">
+                    <i class="fas ${getWeatherIcon(data.weather)}"></i>
+                </div>
+                <div class="weather-temp">${Math.round(data.temp)}°<span>C</span></div>
+                <div class="weather-desc">${data.description}</div>
+                <div class="weather-details">
+                    <div class="weather-detail">
+                        <i class="fas fa-droplet"></i>
+                        <div>
+                            <div class="weather-detail-value">${data.humidity}%</div>
+                            <div class="weather-detail-label">Humidity</div>
+                        </div>
+                    </div>
+                    <div class="weather-detail">
+                        <i class="fas fa-wind"></i>
+                        <div>
+                            <div class="weather-detail-value">${data.wind_speed} m/s</div>
+                            <div class="weather-detail-label">Wind</div>
+                        </div>
+                    </div>
+                    <div class="weather-detail">
+                        <i class="fas fa-cloud"></i>
+                        <div>
+                            <div class="weather-detail-value">${data.clouds}%</div>
+                            <div class="weather-detail-label">Clouds</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('current-weather').innerHTML = weatherHTML;
+            document.getElementById('weather-details').innerHTML = weatherHTML;
+        }
+
+        // Display forecast
+        function displayForecast(data) {
+            const forecastHTML = data.map(day => `
+                <div class="forecast-card">
+                    <div class="forecast-day">${day.date}</div>
+                    <div class="forecast-icon">
+                        <i class="fas ${getWeatherIcon(day.weather)}"></i>
+                    </div>
+                    <div class="forecast-temp">${Math.round(day.temp_max)}°<span class="min">${Math.round(day.temp_min)}°</span></div>
+                </div>
+            `).join('');
+
+            document.getElementById('forecast-container').innerHTML = forecastHTML;
+        }
+
+        // Get weather icon
+        function getWeatherIcon(weather) {
+            const icons = {
+                'clear': 'fa-sun',
+                'clouds': 'fa-cloud',
+                'rain': 'fa-cloud-rain',
+                'drizzle': 'fa-cloud-showers-heavy',
+                'thunderstorm': 'fa-bolt',
+                'snow': 'fa-snowflake',
+                'mist': 'fa-smog'
+            };
+
+            for (let key in icons) {
+                if (weather.toLowerCase().includes(key)) {
+                    return icons[key];
+                }
+            }
+            return 'fa-cloud';
+        }
+
+        // Coming soon modal
+        function showComingSoon(type) {
+            document.getElementById('comingSoonModal').classList.add('active');
+            if (document.getElementById('sideMenu').classList.contains('active')) {
+                toggleMenu();
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('comingSoonModal').classList.remove('active');
+        }
+
+        // Prediction form
+        document.getElementById('prediction-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const data = {
+                soil_ph: parseFloat(document.getElementById('soil-ph').value),
+                soil_moisture: parseFloat(document.getElementById('soil-moisture').value),
+                soil_temp: parseFloat(document.getElementById('soil-temp').value),
+                nitrogen: parseFloat(document.getElementById('nitrogen').value),
+                phosphorus: parseFloat(document.getElementById('phosphorus').value),
+                potassium: parseFloat(document.getElementById('potassium').value)
+            };
+
+            try {
+                const response = await fetch(${API_BASE_URL}/predict, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                document.getElementById('yield-value').innerHTML = ${result.predicted_yield} <span>t/ha</span>;
+                document.getElementById('yield-category').textContent = result.category;
+                document.getElementById('prediction-result').classList.add('show');
+
+                showToast('Prediction completed', 'success');
+            } catch (error) {
+                showToast('Failed to get prediction', 'error');
+            }
+        });
+
+        // Toast notification
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = toast ${type} show;
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Auto-refresh weather every 5 minutes
+        setInterval(() => {
+            if (document.getElementById('dashboard').classList.contains('active')) {
+                fetchWeather().then(displayWeather).catch(() => {});
+            }
+        }, 300000);
+    </script>
+</body>
+</html>
