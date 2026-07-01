@@ -9,1181 +9,141 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         :root {
-            --primary: #0f3d2e;
-            --primary-light: #1a5c47;
-            --primary-soft: #e8f0ec;
-            --accent: #c9a876;
-            --accent-soft: #f5ede0;
-            --cream: #faf9f6;
-            --surface: #ffffff;
-            --border: #eceae4;
-            --border-strong: #d8d5cd;
-            --text: #1a1a1a;
-            --text-muted: #6b6b6b;
-            --text-soft: #9a9a9a;
-            --success: #2d7a5f;
+            --primary: #0f3d2e; --primary-light: #1a5c47; --primary-soft: #e8f0ec;
+            --accent: #c9a876; --accent-soft: #f5ede0; --cream: #faf9f6;
+            --surface: #ffffff; --border: #eceae4; --text: #1a1a1a;
+            --text-muted: #6b6b6b; --text-soft: #9a9a9a; --success: #2d7a5f;
             --shadow-sm: 0 1px 2px rgba(15, 61, 46, 0.04);
             --shadow-md: 0 4px 20px rgba(15, 61, 46, 0.06);
-            --shadow-lg: 0 20px 60px rgba(15, 61, 46, 0.12);
         }
-
-        html, body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--cream);
-            color: var(--text);
-            overflow-x: hidden;
-            font-size: 15px;
-            line-height: 1.5;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        /* ===== Splash Screen ===== */
-        #splash {
-            position: fixed;
-            inset: 0;
-            background: var(--primary);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 10000;
-            transition: opacity 0.6s ease;
-            overflow: hidden;
-        }
-
-        #splash::before {
-            content: '';
-            position: absolute;
-            top: -30%;
-            right: -20%;
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, rgba(201, 168, 118, 0.15) 0%, transparent 70%);
-            border-radius: 50%;
-        }
-
-        #splash::after {
-            content: '';
-            position: absolute;
-            bottom: -20%;
-            left: -15%;
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(201, 168, 118, 0.1) 0%, transparent 70%);
-            border-radius: 50%;
-        }
-
-        .splash-logo-wrapper {
-            width: 120px;
-            height: 120px;
-            background: var(--surface);
-            border-radius: 32px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 28px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            animation: logoFloat 3s ease-in-out infinite;
-            position: relative;
-            z-index: 1;
-            overflow: hidden;
-        }
-
-        .splash-logo-wrapper img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 32px;
-        }
-
-        .splash-brand {
-            text-align: center;
-            position: relative;
-            z-index: 1;
-        }
-
-        .splash-brand h1 {
-            font-family: 'Fraunces', serif;
-            color: var(--cream);
-            font-size: 38px;
-            letter-spacing: 8px;
-            font-weight: 600;
-            margin-bottom: 10px;
-        }
-
-        .splash-brand .divider {
-            width: 32px;
-            height: 1px;
-            background: var(--accent);
-            margin: 0 auto 14px;
-        }
-
-        .splash-brand p {
-            color: rgba(250, 249, 246, 0.6);
-            font-size: 11px;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            font-weight: 500;
-        }
-
-        .splash-loader {
-            margin-top: 40px;
-            width: 32px;
-            height: 32px;
-            border: 2px solid rgba(250, 249, 246, 0.15);
-            border-top-color: var(--accent);
-            border-radius: 50%;
-            animation: spin 0.9s linear infinite;
-            position: relative;
-            z-index: 1;
-        }
-
-        @keyframes logoFloat {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-6px); }
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* ===== Welcome Page ===== */
-        #welcome {
-            position: fixed;
-            inset: 0;
-            background: var(--cream);
-            z-index: 9000;
-            overflow-y: auto;
-            display: none;
-            animation: fadeIn 0.5s ease;
-        }
-
-        #welcome.active {
-            display: block;
-        }
-
-        .welcome-close {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            color: var(--text);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            z-index: 100;
-            transition: all 0.2s;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .welcome-close:active {
-            transform: scale(0.92);
-            background: var(--primary-soft);
-        }
-
-        .welcome-content {
-            max-width: 560px;
-            margin: 0 auto;
-            padding: 60px 28px 40px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .welcome-phase {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 6px 14px;
-            background: var(--accent-soft);
-            color: var(--primary);
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 600;
-            letter-spacing: 0.8px;
-            text-transform: uppercase;
-            align-self: flex-start;
-            margin-bottom: 24px;
-        }
-
-        .welcome-phase .dot {
-            width: 6px;
-            height: 6px;
-            background: var(--accent);
-            border-radius: 50%;
-            animation: pulse 2s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.4; }
-        }
-
-        .welcome-logo {
-            width: 72px;
-            height: 72px;
-            border-radius: 20px;
-            overflow: hidden;
-            margin-bottom: 24px;
-            box-shadow: var(--shadow-md);
-        }
-
-        .welcome-logo img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .welcome-title {
-            font-family: 'Fraunces', serif;
-            font-size: 36px;
-            color: var(--primary);
-            line-height: 1.15;
-            margin-bottom: 16px;
-            font-weight: 600;
-            letter-spacing: -0.5px;
-        }
-
-        .welcome-subtitle {
-            font-size: 15px;
-            color: var(--text-muted);
-            line-height: 1.6;
-            margin-bottom: 32px;
-        }
-
-        .welcome-features {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 32px;
-        }
-
-        .welcome-feature {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 18px;
-            transition: all 0.2s;
-        }
-
-        .welcome-feature i {
-            font-size: 18px;
-            color: var(--primary);
-            margin-bottom: 10px;
-            display: block;
-        }
-
-        .welcome-feature h4 {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text);
-            margin-bottom: 4px;
-        }
-
-        .welcome-feature p {
-            font-size: 11px;
-            color: var(--text-muted);
-            line-height: 1.4;
-        }
-
-        .welcome-cta {
-            background: var(--primary);
-            color: var(--cream);
-            border: none;
-            padding: 16px;
-            border-radius: 14px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            font-family: inherit;
-            letter-spacing: 0.3px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 32px;
-            transition: all 0.2s;
-        }
-
-        .welcome-cta:active {
-            transform: translateY(1px);
-            background: var(--primary-light);
-        }
-
-        .welcome-credits {
-            margin-top: auto;
-            padding-top: 24px;
-            border-top: 1px solid var(--border);
-            text-align: center;
-        }
-
-        .welcome-credits .line {
-            font-size: 11px;
-            color: var(--text-muted);
-            letter-spacing: 0.5px;
-            margin-bottom: 4px;
-        }
-
-        .welcome-credits .line strong {
-            color: var(--text);
-            font-weight: 600;
-        }
-
-        .welcome-credits .dpml {
-            margin-top: 12px;
-            font-size: 10px;
-            color: var(--text-soft);
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-
-        /* ===== Main App ===== */
-        #app {
-            display: none;
-            min-height: 100vh;
-            padding-bottom: 80px;
-        }
-
-        /* ===== Header ===== */
-        .header {
-            background: var(--surface);
-            padding: 16px 20px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .menu-btn {
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text);
-            width: 40px;
-            height: 40px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .menu-btn:active {
-            transform: scale(0.95);
-            background: var(--cream);
-        }
-
-        .brand {
-            font-family: 'Fraunces', serif;
-            font-size: 20px;
-            font-weight: 600;
-            color: var(--primary);
-            letter-spacing: 3px;
-        }
-
-        .location-badge {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 11px;
-            color: var(--text-muted);
-            font-weight: 500;
-            padding: 6px 12px;
-            background: var(--cream);
-            border-radius: 20px;
-        }
-
-        .location-badge i {
-            color: var(--success);
-            font-size: 8px;
-        }
-
-        /* ===== Side Menu ===== */
-        .side-menu {
-            position: fixed;
-            top: 0;
-            left: -320px;
-            width: 300px;
-            height: 100%;
-            background: var(--surface);
-            z-index: 2000;
-            transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 0 40px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-        }
-
-        .side-menu.active {
-            left: 0;
-        }
-
-        .menu-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(26, 26, 26, 0.4);
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
-            z-index: 1500;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s;
-        }
-
-        .menu-overlay.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .menu-header {
-            padding: 36px 28px 28px;
-            border-bottom: 1px solid var(--border);
-            position: relative;
-        }
-
-        .menu-header .menu-logo {
-            width: 52px;
-            height: 52px;
-            border-radius: 14px;
-            overflow: hidden;
-            margin-bottom: 14px;
-            box-shadow: var(--shadow-md);
-        }
-
-        .menu-header .menu-logo img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .menu-header h2 {
-            font-family: 'Fraunces', serif;
-            font-size: 22px;
-            color: var(--primary);
-            letter-spacing: 3px;
-            margin-bottom: 4px;
-            font-weight: 600;
-        }
-
-        .menu-header p {
-            font-size: 11px;
-            color: var(--text-muted);
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-        }
-
-        .menu-items {
-            padding: 14px 12px;
-            flex: 1;
-            overflow-y: auto;
-        }
-
-        .menu-item {
-            padding: 13px 16px;
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            cursor: pointer;
-            transition: all 0.2s;
-            color: var(--text);
-            border-radius: 12px;
-            margin-bottom: 2px;
-            font-weight: 500;
-            font-size: 14px;
-            position: relative;
-        }
-
-        .menu-item:hover {
-            background: var(--cream);
-        }
-
-        .menu-item.active {
-            background: var(--primary);
-            color: var(--cream);
-        }
-
-        .menu-item.active i {
-            color: var(--accent);
-        }
-
-        .menu-item i {
-            width: 20px;
-            font-size: 14px;
-            color: var(--text-muted);
-            text-align: center;
-        }
-
-        .menu-item .soon-badge {
-            margin-left: auto;
-            font-size: 9px;
-            padding: 3px 8px;
-            background: var(--accent-soft);
-            color: var(--primary);
-            border-radius: 10px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-        }
-
-        .menu-item.active .soon-badge {
-            background: rgba(201, 168, 118, 0.2);
-            color: var(--accent);
-        }
-
-        .close-menu {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: var(--cream);
-            border: none;
-            color: var(--text);
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 13px;
-            transition: all 0.2s;
-        }
-
-        .close-menu:active {
-            transform: scale(0.9);
-        }
-
-        /* ===== Content ===== */
-        .content {
-            padding: 24px 20px;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .page-title {
-            font-family: 'Fraunces', serif;
-            font-size: 28px;
-            color: var(--primary);
-            margin-bottom: 4px;
-            font-weight: 600;
-            letter-spacing: -0.3px;
-        }
-
-        .page-subtitle {
-            font-size: 13px;
-            color: var(--text-muted);
-            margin-bottom: 24px;
-        }
-
-        .card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 22px;
-            margin-bottom: 14px;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .card-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 18px;
-        }
-
-        .card-title {
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .card-title i {
-            color: var(--primary);
-            font-size: 12px;
-        }
-
-        .card-badge {
-            font-size: 9px;
-            padding: 4px 10px;
-            background: var(--primary-soft);
-            color: var(--primary);
-            border-radius: 20px;
-            font-weight: 600;
-            letter-spacing: 0.8px;
-        }
-
-        .card-badge.live {
-            background: var(--success);
-            color: var(--cream);
-        }
-
-        .card-badge.live::before {
-            content: '';
-            display: inline-block;
-            width: 5px;
-            height: 5px;
-            background: var(--cream);
-            border-radius: 50%;
-            margin-right: 6px;
-            animation: pulse 2s ease-in-out infinite;
-            vertical-align: middle;
-        }
-
-        /* ===== Weather Display ===== */
-        .weather-main {
-            text-align: center;
-            padding: 8px 0;
-        }
-
-        .weather-icon {
-            font-size: 56px;
-            color: var(--accent);
-            margin-bottom: 4px;
-            line-height: 1;
-        }
-
-        .weather-temp {
-            font-family: 'Fraunces', serif;
-            font-size: 52px;
-            font-weight: 600;
-            color: var(--primary);
-            line-height: 1;
-            margin-bottom: 4px;
-        }
-
-        .weather-temp span {
-            font-size: 24px;
-            color: var(--text-soft);
-            font-family: 'Inter', sans-serif;
-            font-weight: 400;
-        }
-
-        .weather-desc {
-            font-size: 13px;
-            color: var(--text-muted);
-            margin-bottom: 20px;
-            text-transform: capitalize;
-        }
-
-        .weather-details {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            padding-top: 18px;
-            border-top: 1px solid var(--border);
-        }
-
-        .weather-detail {
-            text-align: center;
-        }
-
-        .weather-detail i {
-            font-size: 14px;
-            color: var(--primary);
-            margin-bottom: 6px;
-        }
-
-        .weather-detail-value {
-            font-size: 15px;
-            font-weight: 700;
-            color: var(--text);
-            margin-bottom: 2px;
-        }
-
-        .weather-detail-label {
-            font-size: 10px;
-            color: var(--text-soft);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        /* ===== Form Elements ===== */
-        .form-group {
-            margin-bottom: 16px;
-        }
-
-        .form-label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: 500;
-            color: var(--text);
-            font-size: 12px;
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 13px 14px;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            font-size: 14px;
-            font-family: inherit;
-            transition: all 0.2s;
-            background: var(--surface);
-            color: var(--text);
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(15, 61, 46, 0.08);
-        }
-
-        .form-input::placeholder {
-            color: var(--text-soft);
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        /* ===== Buttons ===== */
-        .btn {
-            width: 100%;
-            padding: 15px;
-            border: none;
-            border-radius: 12px;
-            font-size: 13px;
-            font-weight: 600;
-            font-family: inherit;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
-            letter-spacing: 0.3px;
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            color: var(--cream);
-        }
-
-        .btn-primary:active {
-            transform: translateY(1px);
-            background: var(--primary-light);
-        }
-
-        .btn-secondary {
-            background: var(--cream);
-            color: var(--primary);
-            border: 1px solid var(--border);
-        }
-
-        .btn-secondary:active {
-            background: var(--accent-soft);
-        }
-
-        /* ===== Prediction Result ===== */
-        .result-box {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-            border-radius: 16px;
-            padding: 26px 22px;
-            text-align: center;
-            margin-top: 22px;
-            display: none;
-            color: var(--cream);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .result-box::before {
-            content: '';
-            position: absolute;
-            top: -40%;
-            right: -15%;
-            width: 180px;
-            height: 180px;
-            background: radial-gradient(circle, rgba(201, 168, 118, 0.2) 0%, transparent 70%);
-            border-radius: 50%;
-        }
-
-        .result-box.show {
-            display: block;
-            animation: slideIn 0.5s ease;
-        }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .result-label {
-            font-size: 10px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            opacity: 0.8;
-            margin-bottom: 8px;
-            position: relative;
-        }
-
-        .result-value {
-            font-family: 'Fraunces', serif;
-            font-size: 42px;
-            font-weight: 600;
-            margin-bottom: 12px;
-            position: relative;
-        }
-
-        .result-category {
-            display: inline-block;
-            padding: 6px 14px;
-            background: var(--accent);
-            color: var(--primary);
-            border-radius: 20px;
-            font-weight: 600;
-            font-size: 11px;
-            letter-spacing: 0.5px;
-            position: relative;
-        }
-
-        /* ===== Coming Soon Modal ===== */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(26, 26, 26, 0.5);
-            backdrop-filter: blur(6px);
-            -webkit-backdrop-filter: blur(6px);
-            z-index: 3000;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .modal-overlay.active {
-            display: flex;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .modal {
-            background: var(--surface);
-            border-radius: 24px;
-            padding: 32px 28px;
-            max-width: 380px;
-            width: 100%;
-            text-align: center;
-            position: relative;
-            animation: modalIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
-        @keyframes modalIn {
-            from { opacity: 0; transform: scale(0.9) translateY(20px); }
-            to { opacity: 1; transform: scale(1) translateY(0); }
-        }
-
-        .modal-close {
-            position: absolute;
-            top: 16px;
-            right: 16px;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: var(--cream);
-            border: none;
-            color: var(--text);
-            cursor: pointer;
-            font-size: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-icon {
-            width: 64px;
-            height: 64px;
-            background: var(--accent-soft);
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
-        }
-
-        .modal-icon i {
-            font-size: 26px;
-            color: var(--primary);
-        }
-
-        .modal h3 {
-            font-family: 'Fraunces', serif;
-            font-size: 22px;
-            color: var(--primary);
-            margin-bottom: 8px;
-            font-weight: 600;
-        }
-
-        .modal p {
-            font-size: 13px;
-            color: var(--text-muted);
-            line-height: 1.6;
-            margin-bottom: 20px;
-        }
-
-        .modal-features {
-            text-align: left;
-            background: var(--cream);
-            border-radius: 14px;
-            padding: 16px;
-            margin-bottom: 20px;
-        }
-
-        .modal-feature {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 8px 0;
-            font-size: 12px;
-            color: var(--text);
-        }
-
-        .modal-feature i {
-            color: var(--success);
-            font-size: 11px;
-        }
-
-        .modal-btn {
-            background: var(--primary);
-            color: var(--cream);
-            border: none;
-            padding: 13px;
-            border-radius: 12px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            font-family: inherit;
-            width: 100%;
-        }
-
-        /* ===== Map ===== */
-        .map-container {
-            width: 100%;
-            height: 320px;
-            border-radius: 16px;
-            overflow: hidden;
-            border: 1px solid var(--border);
-        }
-
-        .map-container iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-
-        .map-caption {
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 11px;
-            margin-top: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-        }
-
-        /* ===== Loading ===== */
-        .loading {
-            display: none;
-            text-align: center;
-            padding: 32px 20px;
-        }
-
-        .loading.show {
-            display: block;
-        }
-
-        .spinner {
-            width: 32px;
-            height: 32px;
-            border: 2px solid var(--border);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin: 0 auto 14px;
-        }
-
-        .loading p {
-            font-size: 12px;
-            color: var(--text-muted);
-        }
-
-        /* ===== Footer ===== */
-        .footer {
-            text-align: center;
-            padding: 32px 20px 20px;
-            border-top: 1px solid var(--border);
-            margin-top: 32px;
-        }
-
-        .footer-brand {
-            font-family: 'Fraunces', serif;
-            font-size: 18px;
-            color: var(--primary);
-            letter-spacing: 4px;
-            margin-bottom: 6px;
-            font-weight: 600;
-        }
-
-        .footer-text {
-            font-size: 11px;
-            color: var(--text-muted);
-            letter-spacing: 0.5px;
-        }
-
-        /* ===== Pages ===== */
-        .page {
-            display: none;
-        }
-
-        .page.active {
-            display: block;
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(4px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* ===== Forecast ===== */
-        .forecast-grid {
-            display: grid;
-            gap: 8px;
-        }
-
-        .forecast-card {
-            background: var(--cream);
-            padding: 16px 18px;
-            border-radius: 14px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: all 0.2s;
-        }
-
-        .forecast-card:hover {
-            background: var(--accent-soft);
-        }
-
-        .forecast-day {
-            font-weight: 600;
-            color: var(--text);
-            font-size: 13px;
-            min-width: 80px;
-        }
-
-        .forecast-icon {
-            font-size: 22px;
-            color: var(--primary);
-        }
-
-        .forecast-temp {
-            font-weight: 600;
-            color: var(--text);
-            font-size: 13px;
-        }
-
-        .forecast-temp .min {
-            color: var(--text-soft);
-            margin-left: 6px;
-        }
-
-        /* ===== Toast ===== */
-        .toast {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: var(--text);
-            color: var(--cream);
-            padding: 13px 22px;
-            border-radius: 12px;
-            z-index: 4000;
-            opacity: 0;
-            transition: all 0.3s;
-            box-shadow: var(--shadow-lg);
-            font-size: 12px;
-            font-weight: 500;
-            max-width: 90%;
-            text-align: center;
-        }
-
-        .toast.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
-
-        .toast.error {
-            background: #8b2e2e;
-        }
-
-        .toast.success {
-            background: var(--primary);
-        }
-
-        /* ===== Responsive ===== */
-        @media (max-width: 480px) {
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-
-            .weather-details {
-                grid-template-columns: 1fr;
-                gap: 14px;
-            }
-
-            .weather-detail {
-                display: flex;
-                align-items: center;
-                gap: 12px;
-                text-align: left;
-                padding: 6px 0;
-            }
-
-            .weather-detail i {
-                margin-bottom: 0;
-                width: 20px;
-            }
-
-            .splash-brand h1 {
-                font-size: 32px;
-            }
-
-            .welcome-title {
-                font-size: 28px;
-            }
-
-            .welcome-features {
-                grid-template-columns: 1fr;
-            }
-
-            .page-title {
-                font-size: 24px;
-            }
+        html, body { font-family: 'Inter', sans-serif; background: var(--cream); color: var(--text); overflow-x: hidden; font-size: 15px; line-height: 1.5; }
+        
+        /* Splash */
+        #splash { position: fixed; inset: 0; background: var(--primary); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 10000; transition: opacity 0.6s ease; }
+        .splash-logo-wrapper { width: 120px; height: 120px; background: var(--surface); border-radius: 32px; display: flex; justify-content: center; align-items: center; margin-bottom: 28px; animation: logoFloat 3s ease-in-out infinite; overflow: hidden; }
+        .splash-logo-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+        .splash-brand h1 { font-family: 'Fraunces', serif; color: var(--cream); font-size: 38px; letter-spacing: 8px; margin-bottom: 10px; }
+        .splash-brand .divider { width: 32px; height: 1px; background: var(--accent); margin: 0 auto 14px; }
+        .splash-brand p { color: rgba(250,249,246,0.6); font-size: 11px; letter-spacing: 3px; text-transform: uppercase; }
+        .splash-loader { margin-top: 40px; width: 32px; height: 32px; border: 2px solid rgba(250,249,246,0.15); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.9s linear infinite; }
+        @keyframes logoFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Welcome */
+        #welcome { position: fixed; inset: 0; background: var(--cream); z-index: 9000; overflow-y: auto; display: none; }
+        #welcome.active { display: block; animation: fadeIn 0.5s ease; }
+        .welcome-close { position: fixed; top: 20px; right: 20px; width: 40px; height: 40px; border-radius: 50%; background: var(--surface); border: 1px solid var(--border); cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 100; }
+        .welcome-content { max-width: 560px; margin: 0 auto; padding: 60px 28px 40px; min-height: 100vh; display: flex; flex-direction: column; }
+        .welcome-phase { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; background: var(--accent-soft); color: var(--primary); border-radius: 20px; font-size: 11px; font-weight: 600; align-self: flex-start; margin-bottom: 24px; }
+        .welcome-logo { width: 72px; height: 72px; border-radius: 20px; overflow: hidden; margin-bottom: 24px; box-shadow: var(--shadow-md); }
+        .welcome-logo img { width: 100%; height: 100%; object-fit: cover; }
+        .welcome-title { font-family: 'Fraunces', serif; font-size: 36px; color: var(--primary); margin-bottom: 16px; line-height: 1.15; }
+        .welcome-subtitle { font-size: 15px; color: var(--text-muted); margin-bottom: 32px; line-height: 1.6; }
+        .welcome-features { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 32px; }
+        .welcome-feature { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 18px; }
+        .welcome-feature i { font-size: 18px; color: var(--primary); margin-bottom: 10px; display: block; }
+        .welcome-feature h4 { font-size: 13px; margin-bottom: 4px; }
+        .welcome-feature p { font-size: 11px; color: var(--text-muted); }
+        .welcome-cta { background: var(--primary); color: var(--cream); border: none; padding: 16px; border-radius: 14px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 32px; }
+        .welcome-credits { margin-top: auto; padding-top: 24px; border-top: 1px solid var(--border); text-align: center; font-size: 11px; color: var(--text-muted); }
+
+        /* App */
+        #app { display: none; min-height: 100vh; padding-bottom: 80px; }
+        .header { background: var(--surface); padding: 16px 20px; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border); }
+        .header-content { display: flex; justify-content: space-between; align-items: center; max-width: 600px; margin: 0 auto; }
+        .menu-btn { background: transparent; border: 1px solid var(--border); width: 40px; height: 40px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .brand { font-family: 'Fraunces', serif; font-size: 20px; color: var(--primary); letter-spacing: 3px; font-weight: 600; }
+        .location-badge { font-size: 11px; color: var(--text-muted); padding: 6px 12px; background: var(--cream); border-radius: 20px; display: flex; align-items: center; gap: 6px; }
+        
+        /* Menu */
+        .side-menu { position: fixed; top: 0; left: -320px; width: 300px; height: 100%; background: var(--surface); z-index: 2000; transition: left 0.3s cubic-bezier(0.4,0,0.2,1); box-shadow: 0 0 40px rgba(0,0,0,0.1); }
+        .side-menu.active { left: 0; }
+        .menu-overlay { position: fixed; inset: 0; background: rgba(26,26,26,0.4); backdrop-filter: blur(4px); z-index: 1500; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+        .menu-overlay.active { opacity: 1; pointer-events: auto; }
+        .menu-header { padding: 36px 28px 28px; border-bottom: 1px solid var(--border); position: relative; }
+        .close-menu { position: absolute; top: 20px; right: 20px; background: var(--cream); border: none; width: 34px; height: 34px; border-radius: 50%; cursor: pointer; }
+        .menu-items { padding: 14px 12px; }
+        .menu-item { padding: 13px 16px; display: flex; align-items: center; gap: 14px; cursor: pointer; border-radius: 12px; margin-bottom: 2px; font-weight: 500; transition: all 0.2s; }
+        .menu-item:hover { background: var(--cream); }
+        .menu-item.active { background: var(--primary); color: var(--cream); }
+        .menu-item i { width: 20px; text-align: center; }
+        .soon-badge { margin-left: auto; font-size: 9px; padding: 3px 8px; background: var(--accent-soft); color: var(--primary); border-radius: 10px; font-weight: 600; }
+
+        /* Content */
+        .content { padding: 24px 20px; max-width: 600px; margin: 0 auto; }
+        .page-title { font-family: 'Fraunces', serif; font-size: 28px; color: var(--primary); margin-bottom: 4px; }
+        .page-subtitle { font-size: 13px; color: var(--text-muted); margin-bottom: 24px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .auto-badge { font-size: 10px; background: var(--success); color: white; padding: 2px 8px; border-radius: 10px; font-weight: 600; display: none; animation: fadeIn 0.5s ease; }
+        .card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 22px; margin-bottom: 14px; box-shadow: var(--shadow-sm); }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+        .card-title { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; display: flex; align-items: center; gap: 8px; }
+        .card-badge.live { background: var(--success); color: var(--cream); font-size: 9px; padding: 4px 10px; border-radius: 20px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+        .card-badge.live::before { content:''; width:5px; height:5px; background:var(--cream); border-radius:50%; animation:pulse 2s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+        /* Weather */
+        .weather-main { text-align: center; padding: 8px 0; }
+        .weather-icon { font-size: 56px; color: var(--accent); margin-bottom: 4px; }
+        .weather-temp { font-family: 'Fraunces', serif; font-size: 52px; color: var(--primary); font-weight: 600; }
+        .weather-temp span { font-size: 24px; color: var(--text-soft); font-family: 'Inter', sans-serif; font-weight: 400; }
+        .weather-desc { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; text-transform: capitalize; }
+        .weather-details { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; padding-top: 18px; border-top: 1px solid var(--border); }
+        .weather-detail { text-align: center; }
+        .weather-detail i { color: var(--primary); margin-bottom: 6px; display: block; font-size: 14px; }
+        .weather-detail-value { font-weight: 700; font-size: 15px; margin-bottom: 2px; }
+        .weather-detail-label { font-size: 10px; color: var(--text-soft); text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* Forms */
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .form-group { margin-bottom: 16px; }
+        .form-label { display: block; margin-bottom: 6px; font-weight: 500; font-size: 12px; }
+        .form-input { width: 100%; padding: 13px 14px; border: 1px solid var(--border); border-radius: 12px; font-size: 14px; font-family: inherit; transition: all 0.2s; background: var(--surface); }
+        .form-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(15,61,46,0.08); }
+        .btn { width: 100%; padding: 15px; border: none; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; font-family: inherit; transition: all 0.2s; }
+        .btn-primary { background: var(--primary); color: var(--cream); }
+        .btn-primary:active { transform: translateY(1px); background: var(--primary-light); }
+        .btn-secondary { background: var(--cream); color: var(--primary); border: 1px solid var(--border); }
+
+        /* Results */
+        .result-box { background: linear-gradient(135deg, var(--primary), var(--primary-light)); border-radius: 16px; padding: 26px 22px; text-align: center; margin-top: 22px; display: none; color: var(--cream); position: relative; overflow: hidden; }
+        .result-box.show { display: block; animation: slideIn 0.5s ease; }
+        .result-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; opacity: 0.8; margin-bottom: 8px; }
+        .result-value { font-family: 'Fraunces', serif; font-size: 42px; font-weight: 600; margin-bottom: 12px; }
+        .result-value span { font-size: 24px; font-family: 'Inter', sans-serif; font-weight: 400; }
+        .result-category { background: var(--accent); color: var(--primary); padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: 600; display: inline-block; }
+        @keyframes slideIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+        /* Utilities */
+        .page { display: none; } .page.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
+        .loading { text-align: center; padding: 32px 20px; } .spinner { width: 32px; height: 32px; border: 2px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 14px; }
+        .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--text); color: var(--cream); padding: 13px 22px; border-radius: 12px; z-index: 4000; opacity: 0; transition: all 0.3s; font-size: 12px; font-weight: 500; max-width: 90%; text-align: center; box-shadow: var(--shadow-md); }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        .toast.error { background: #8b2e2e; } .toast.success { background: var(--primary); }
+        .map-container { width: 100%; height: 320px; border-radius: 16px; overflow: hidden; border: 1px solid var(--border); background: #e8f0ec; position: relative; }
+        .map-container iframe { width: 100%; height: 100%; border: none; }
+        .map-fallback { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--primary-soft); color: var(--primary); text-align: center; padding: 20px; z-index: 0; }
+        .forecast-grid { display: grid; gap: 8px; }
+        .forecast-card { background: var(--cream); padding: 16px 18px; border-radius: 14px; display: flex; justify-content: space-between; align-items: center; }
+        .forecast-day { font-weight: 600; min-width: 60px; } .forecast-icon { font-size: 20px; color: var(--primary); }
+        
+        /* Modal */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(26,26,26,0.5); backdrop-filter: blur(6px); z-index: 3000; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .modal-overlay.active { display: flex; animation: fadeIn 0.3s ease; }
+        .modal { background: var(--surface); border-radius: 24px; padding: 32px 28px; max-width: 380px; width: 100%; text-align: center; position: relative; animation: modalIn 0.4s cubic-bezier(0.34,1.56,0.64,1); }
+        @keyframes modalIn { from{opacity:0;transform:scale(0.9) translateY(20px)} to{opacity:1;transform:scale(1) translateY(0)} }
+        .modal-close { position: absolute; top: 16px; right: 16px; background: var(--cream); border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .modal-icon { width: 64px; height: 64px; background: var(--accent-soft); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
+        .disclaimer { font-size: 10px; color: var(--text-soft); text-align: center; margin-top: 12px; line-height: 1.4; }
+
+        @media (max-width: 480px) { 
+            .form-row { grid-template-columns: 1fr; } 
+            .weather-details { grid-template-columns: 1fr; gap: 14px; } 
+            .weather-detail { display: flex; align-items: center; gap: 12px; text-align: left; padding: 6px 0; }
+            .weather-detail i { margin-bottom: 0; width: 20px; }
+            .welcome-features { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -1191,245 +151,108 @@
 
     <!-- Splash Screen -->
     <div id="splash">
-        <div class="splash-logo-wrapper">
-            <img src="https://cdn.postimage.me/2026/06/30/original-1491e3ec98c36b04240844adc3cc63bb.webp" alt="WAKAY Logo">
-        </div>
-        <div class="splash-brand">
-            <h1>WAKAY</h1>
-            <div class="divider"></div>
-            <p>Smart Agriculture</p>
-        </div>
+        <div class="splash-logo-wrapper"><img src="https://cdn.postimage.me/2026/06/30/original-1491e3ec98c36b04240844adc3cc63bb.webp" alt="WAKAY"></div>
+        <div class="splash-brand"><h1>WAKAY</h1><div class="divider"></div><p>Smart Agriculture</p></div>
         <div class="splash-loader"></div>
     </div>
 
     <!-- Welcome Page -->
     <div id="welcome">
-        <button class="welcome-close" onclick="closeWelcome()">
-            <i class="fas fa-times"></i>
-        </button>
+        <button class="welcome-close" onclick="closeWelcome()"><i class="fas fa-times"></i></button>
         <div class="welcome-content">
-            <div class="welcome-phase">
-                <span class="dot"></span>
-                Experimental Phase 1
-            </div>
-
-            <div class="welcome-logo">
-                <img src="https://cdn.postimage.me/2026/06/30/original-1491e3ec98c36b04240844adc3cc63bb.webp" alt="WAKAY">
-            </div>
-
+            <div class="welcome-phase"><span style="width:6px;height:6px;background:var(--accent);border-radius:50%;display:block;animation:pulse 2s infinite"></span> Experimental Phase 1</div>
+            <div class="welcome-logo"><img src="https://cdn.postimage.me/2026/06/30/original-1491e3ec98c36b04240844adc3cc63bb.webp" alt="WAKAY"></div>
             <h1 class="welcome-title">Welcome to WAKAY</h1>
-            <p class="welcome-subtitle">
-                An intelligent agriculture platform built to help farmers make faster, smarter decisions. WAKAY combines real-time environmental data with machine learning to identify pests early, predict their escalation, assess yield loss impact, and forecast crop output — protecting your harvest before it's too late.
-            </p>
-
+            <p class="welcome-subtitle">An intelligent agriculture platform combining real-time satellite data with agronomic science to automate soil analysis and predict crop yields.</p>
             <div class="welcome-features">
-                <div class="welcome-feature">
-                    <i class="fas fa-bug"></i>
-                    <h4>Pest Identification</h4>
-                    <p>Rapid detection of crop threats</p>
-                </div>
-                <div class="welcome-feature">
-                    <i class="fas fa-chart-line"></i>
-                    <h4>Escalation Analysis</h4>
-                    <p>Predict pest spread patterns</p>
-                </div>
-                <div class="welcome-feature">
-                    <i class="fas fa-triangle-exclamation"></i>
-                    <h4>Yield Loss Impact</h4>
-                    <p>Quantify potential damage</p>
-                </div>
-                <div class="welcome-feature">
-                    <i class="fas fa-seedling"></i>
-                    <h4>Yield Prediction</h4>
-                    <p>Forecast harvest output</p>
-                </div>
+                <div class="welcome-feature"><i class="fas fa-satellite"></i><h4>Satellite Soil Data</h4><p>Auto-detect pH, moisture & nutrients</p></div>
+                <div class="welcome-feature"><i class="fas fa-calculator"></i><h4>Smart Prediction</h4><p>Science-based yield forecasting</p></div>
+                <div class="welcome-feature"><i class="fas fa-cloud"></i><h4>Live Weather</h4><p>Real-time atmospheric monitoring</p></div>
+                <div class="welcome-feature"><i class="fas fa-map"></i><h4>Radar Maps</h4><p>Regional precipitation tracking</p></div>
             </div>
-
-            <button class="welcome-cta" onclick="closeWelcome()">
-                Enter Platform
-                <i class="fas fa-arrow-right"></i>
-            </button>
-
-            <div class="welcome-credits">
-                <div class="line">Developed by <strong>Randall Castillo</strong></div>
-                <div class="line">Powered by <strong>DPML</strong></div>
-                <div class="dpml">Data Processing &amp; Machine Learning Laboratory</div>
-            </div>
+            <button class="welcome-cta" onclick="closeWelcome()">Enter Platform <i class="fas fa-arrow-right"></i></button>
+            <div class="welcome-credits">Developed by <strong>Randall Castillo</strong> · Powered by <strong>DPML</strong></div>
         </div>
     </div>
 
     <!-- Main App -->
     <div id="app">
-        <!-- Header -->
         <header class="header">
             <div class="header-content">
-                <button class="menu-btn" onclick="toggleMenu()">
-                    <i class="fas fa-bars"></i>
-                </button>
+                <button class="menu-btn" onclick="toggleMenu()"><i class="fas fa-bars"></i></button>
                 <div class="brand">WAKAY</div>
-                <div class="location-badge">
-                    <i class="fas fa-circle"></i>
-                    <span id="location-text">Locating...</span>
-                </div>
+                <div class="location-badge"><i class="fas fa-circle" style="font-size:8px;color:var(--success)"></i> <span id="location-text">Locating...</span></div>
             </div>
         </header>
 
-        <!-- Side Menu -->
-        <div class="menu-overlay" onclick="toggleMenu"></div>
+        <div class="menu-overlay" onclick="toggleMenu()"></div>
         <div class="side-menu" id="sideMenu">
             <div class="menu-header">
-                <button class="close-menu" onclick="toggleMenu()">
-                    <i class="fas fa-times"></i>
-                </button>
-                <div class="menu-logo">
-                    <img src="https://cdn.postimage.me/2026/06/30/original-1491e3ec98c36b04240844adc3cc63bb.webp" alt="WAKAY">
-                </div>
-                <h2>WAKAY</h2>
-                <p>Smart Agriculture</p>
+                <button class="close-menu" onclick="toggleMenu()"><i class="fas fa-times"></i></button>
+                <div style="width:52px;height:52px;border-radius:14px;overflow:hidden;margin-bottom:14px;box-shadow:var(--shadow-md)"><img src="https://cdn.postimage.me/2026/06/30/original-1491e3ec98c36b04240844adc3cc63bb.webp" style="width:100%;height:100%;object-fit:cover" alt="Logo"></div>
+                <h2 style="font-family:'Fraunces';color:var(--primary);letter-spacing:3px;font-size:22px;margin-bottom:4px;">WAKAY</h2>
+                <p style="font-size:11px;color:var(--text-muted);letter-spacing:1.5px;text-transform:uppercase;">Smart Agriculture</p>
             </div>
             <div class="menu-items">
-                <div class="menu-item active" onclick="showPage('dashboard', this)">
-                    <i class="fas fa-th-large"></i>
-                    <span>Dashboard</span>
-                </div>
-                <div class="menu-item" onclick="showPage('weather', this)">
-                    <i class="fas fa-cloud"></i>
-                    <span>Live Weather</span>
-                </div>
-                <div class="menu-item" onclick="showPage('prediction', this)">
-                    <i class="fas fa-seedling"></i>
-                    <span>Yield Prediction</span>
-                </div>
-                <div class="menu-item" onclick="showComingSoon('pest')">
-                    <i class="fas fa-bug"></i>
-                    <span>Pest Prediction</span>
-                    <span class="soon-badge">SOON</span>
-                </div>
-                <div class="menu-item" onclick="showPage('forecast', this)">
-                    <i class="fas fa-calendar"></i>
-                    <span>Weather Forecast</span>
-                </div>
-                <div class="menu-item" onclick="showPage('map', this)">
-                    <i class="fas fa-map"></i>
-                    <span>Weather Map</span>
-                </div>
+                <div class="menu-item active" onclick="showPage('dashboard', this)"><i class="fas fa-th-large"></i> Dashboard</div>
+                <div class="menu-item" onclick="showPage('weather', this)"><i class="fas fa-cloud"></i> Live Weather</div>
+                <div class="menu-item" onclick="showPage('prediction', this)"><i class="fas fa-seedling"></i> Yield Prediction</div>
+                <div class="menu-item" onclick="showComingSoon()"><i class="fas fa-bug"></i> Pest Prediction <span class="soon-badge">SOON</span></div>
+                <div class="menu-item" onclick="showPage('forecast', this)"><i class="fas fa-calendar"></i> Forecast</div>
+                <div class="menu-item" onclick="showPage('map', this)"><i class="fas fa-map"></i> Weather Map</div>
             </div>
         </div>
 
-        <!-- Content -->
         <div class="content">
-            <!-- Dashboard Page -->
+            <!-- Dashboard -->
             <div id="dashboard" class="page active">
                 <h1 class="page-title">Dashboard</h1>
                 <p class="page-subtitle">Your farm at a glance</p>
-
                 <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">
-                            <i class="fas fa-cloud"></i>
-                            Current Conditions
-                        </div>
-                        <span class="card-badge live">LIVE</span>
-                    </div>
-                    <div class="weather-main" id="current-weather">
-                        <div class="loading show">
-                            <div class="spinner"></div>
-                            <p>Loading weather data...</p>
-                        </div>
-                    </div>
+                    <div class="card-header"><div class="card-title"><i class="fas fa-cloud"></i> Current Conditions</div><span class="card-badge live">LIVE</span></div>
+                    <div class="weather-main" id="current-weather"><div class="loading"><div class="spinner"></div><p>Loading weather data...</p></div></div>
                 </div>
-
                 <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">
-                            <i class="fas fa-bolt"></i>
-                            Quick Actions
-                        </div>
-                    </div>
-                    <button class="btn btn-primary" onclick="showPage('prediction', document.querySelectorAll('.menu-item')[2])" style="margin-bottom: 8px;">
-                        <i class="fas fa-seedling"></i>
-                        Predict Crop Yield
-                    </button>
-                    <button class="btn btn-secondary" onclick="showComingSoon('pest')">
-                        <i class="fas fa-bug"></i>
-                        Pest Analysis
-                    </button>
+                    <div class="card-header"><div class="card-title"><i class="fas fa-bolt"></i> Quick Actions</div></div>
+                    <button class="btn btn-primary" onclick="showPage('prediction', document.querySelectorAll('.menu-item')[2])" style="margin-bottom:8px"><i class="fas fa-seedling"></i> Predict Crop Yield</button>
+                    <button class="btn btn-secondary" onclick="showComingSoon()"><i class="fas fa-bug"></i> Pest Analysis</button>
                 </div>
             </div>
 
-            <!-- Weather Page -->
+            <!-- Weather -->
             <div id="weather" class="page">
                 <h1 class="page-title">Live Weather</h1>
                 <p class="page-subtitle">Real-time atmospheric data</p>
-
                 <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">
-                            <i class="fas fa-cloud"></i>
-                            Conditions
-                        </div>
-                        <span class="card-badge live">LIVE</span>
-                    </div>
-                    <div id="weather-details">
-                        <div class="loading show">
-                            <div class="spinner"></div>
-                            <p>Fetching weather data...</p>
-                        </div>
-                    </div>
+                    <div class="card-header"><div class="card-title"><i class="fas fa-cloud"></i> Conditions</div><span class="card-badge live">LIVE</span></div>
+                    <div id="weather-details"><div class="loading"><div class="spinner"></div><p>Fetching weather data...</p></div></div>
                 </div>
             </div>
 
-            <!-- Prediction Page -->
+            <!-- Prediction -->
             <div id="prediction" class="page">
                 <h1 class="page-title">Yield Prediction</h1>
-                <p class="page-subtitle">Sweet potato harvest forecast</p>
-
+                <p class="page-subtitle">Sweet potato harvest forecast <span id="soil-auto-badge" class="auto-badge"><i class="fas fa-satellite"></i> AUTO-DETECTED</span></p>
+                
                 <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">
-                            <i class="fas fa-seedling"></i>
-                            Input Parameters
-                        </div>
-                    </div>
+                    <div class="card-header"><div class="card-title"><i class="fas fa-seedling"></i> Input Parameters</div></div>
                     <form id="prediction-form">
                         <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">Soil pH</label>
-                                <input type="number" step="0.1" class="form-input" id="soil-ph" placeholder="6.4" required>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Soil Moisture (%)</label>
-                                <input type="number" step="0.1" class="form-input" id="soil-moisture" placeholder="34.2" required>
-                            </div>
+                            <div class="form-group"><label class="form-label">Soil pH</label><input type="number" step="0.1" class="form-input" id="soil-ph" placeholder="Detecting..." required></div>
+                            <div class="form-group"><label class="form-label">Soil Moisture (%)</label><input type="number" step="0.1" class="form-input" id="soil-moisture" placeholder="Detecting..." required></div>
                         </div>
-
                         <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">Soil Temp (°C)</label>
-                                <input type="number" step="0.1" class="form-input" id="soil-temp" placeholder="27.5" required>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Nitrogen (N)</label>
-                                <input type="number" class="form-input" id="nitrogen" placeholder="70" required>
-                            </div>
+                            <div class="form-group"><label class="form-label">Soil Temp (°C)</label><input type="number" step="0.1" class="form-input" id="soil-temp" placeholder="Detecting..." required></div>
+                            <div class="form-group"><label class="form-label">Nitrogen (N) ppm</label><input type="number" class="form-input" id="nitrogen" placeholder="Estimating..." required></div>
                         </div>
-
                         <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">Phosphorus (P)</label>
-                                <input type="number" class="form-input" id="phosphorus" placeholder="25" required>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Potassium (K)</label>
-                                <input type="number" class="form-input" id="potassium" placeholder="180" required>
-                            </div>
+                            <div class="form-group"><label class="form-label">Phosphorus (P) ppm</label><input type="number" class="form-input" id="phosphorus" placeholder="Estimating..." required></div>
+                            <div class="form-group"><label class="form-label">Potassium (K) ppm</label><input type="number" class="form-input" id="potassium" placeholder="Estimating..." required></div>
                         </div>
-
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-calculator"></i>
-                            Predict Yield
-                        </button>
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-calculator"></i> Predict Yield</button>
                     </form>
+                    
+                    <p class="disclaimer"><i class="fas fa-info-circle"></i> Nutrient values (N, P, K) are scientifically estimated from satellite-derived Soil Organic Carbon data via Pedotransfer Functions. For precision fertilization, please verify with a local soil test.</p>
 
                     <div class="result-box" id="prediction-result">
                         <div class="result-label">Predicted Yield</div>
@@ -1439,141 +262,181 @@
                 </div>
             </div>
 
-            <!-- Forecast Page -->
+            <!-- Forecast -->
             <div id="forecast" class="page">
                 <h1 class="page-title">Forecast</h1>
                 <p class="page-subtitle">5-day weather outlook</p>
-
                 <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">
-                            <i class="fas fa-calendar"></i>
-                            Upcoming Days
-                        </div>
-                    </div>
-                    <div class="forecast-grid" id="forecast-container">
-                        <div class="loading show">
-                            <div class="spinner"></div>
-                            <p>Loading forecast...</p>
-                        </div>
-                    </div>
+                    <div class="card-header"><div class="card-title"><i class="fas fa-calendar"></i> Upcoming Days</div></div>
+                    <div class="forecast-grid" id="forecast-container"><div class="loading"><div class="spinner"></div><p>Loading forecast...</p></div></div>
                 </div>
             </div>
 
-            <!-- Map Page -->
+            <!-- Map -->
             <div id="map" class="page">
                 <h1 class="page-title">Weather Map</h1>
                 <p class="page-subtitle">Interactive regional overview</p>
-
                 <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">
-                            <i class="fas fa-map"></i>
-                            Radar View
-                        </div>
-                    </div>
+                    <div class="card-header"><div class="card-title"><i class="fas fa-map"></i> Radar View</div></div>
                     <div class="map-container">
-                        <iframe id="weather-map" src="" allow="fullscreen"></iframe>
-                    </div>
-                    <div class="map-caption">
-                        <i class="fas fa-info-circle"></i>
-                        <span>Interactive radar. If blank, disable adblocker or run on a local server. </span>
-                        <a id="windy-direct-link" href="#" target="_blank" style="color: var(--primary); font-weight: 600; text-decoration: underline;">Open directly in Windy</a>
+                        <div class="map-fallback" id="map-fallback">
+                            <i class="fas fa-map-marked-alt" style="font-size:32px;margin-bottom:12px;"></i>
+                            <p style="font-weight:600;margin-bottom:8px;">Interactive Map</p>
+                            <p style="font-size:12px;opacity:0.8;margin-bottom:16px;">Map requires an active internet connection and may be blocked by some browsers when running locally.</p>
+                            <a id="windy-direct-link" href="#" target="_blank" class="btn btn-primary" style="padding:10px 20px;font-size:12px;width:auto;">Open in Windy.com</a>
+                        </div>
+                        <iframe id="weather-map" src="" allow="fullscreen" onload="document.getElementById('map-fallback').style.display='none'"></iframe>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Footer -->
-        <footer class="footer">
-            <div class="footer-brand">WAKAY</div>
-            <div class="footer-text">Smart Agriculture Platform</div>
-            <div class="footer-text" style="margin-top: 6px; opacity: 0.7;">
-                © 2026 · Experimental Phase 1
-            </div>
+        <footer style="text-align:center;padding:32px 20px;border-top:1px solid var(--border);margin-top:32px;">
+            <div style="font-family:'Fraunces';font-size:18px;color:var(--primary);letter-spacing:4px;margin-bottom:6px;font-weight:600;">WAKAY</div>
+            <div style="font-size:11px;color:var(--text-muted);">Smart Agriculture Platform · © 2026 Experimental Phase 1</div>
         </footer>
     </div>
 
     <!-- Coming Soon Modal -->
     <div class="modal-overlay" id="comingSoonModal">
         <div class="modal">
-            <button class="modal-close" onclick="closeModal()">
-                <i class="fas fa-times"></i>
-            </button>
-            <div class="modal-icon">
-                <i class="fas fa-bug"></i>
+            <button class="modal-close" onclick="document.getElementById('comingSoonModal').classList.remove('active')"><i class="fas fa-times"></i></button>
+            <div class="modal-icon"><i class="fas fa-bug" style="font-size:26px;color:var(--primary)"></i></div>
+            <h3 style="font-family:'Fraunces';color:var(--primary);margin-bottom:8px;font-size:22px;">Pest Intelligence</h3>
+            <p style="font-size:13px;color:var(--text-muted);line-height:1.6;margin-bottom:20px;">This feature is currently in development. Soon you'll be able to identify crop pests, predict their spread, and quantify potential yield loss.</p>
+            <div style="text-align:left;background:var(--cream);border-radius:14px;padding:16px;margin-bottom:20px;">
+                <div style="display:flex;align-items:center;gap:10px;padding:8px 0;font-size:12px;"><i class="fas fa-check" style="color:var(--success);font-size:11px;"></i> AI-powered pest identification</div>
+                <div style="display:flex;align-items:center;gap:10px;padding:8px 0;font-size:12px;"><i class="fas fa-check" style="color:var(--success);font-size:11px;"></i> Escalation risk forecasting</div>
+                <div style="display:flex;align-items:center;gap:10px;padding:8px 0;font-size:12px;"><i class="fas fa-check" style="color:var(--success);font-size:11px;"></i> Yield loss impact analysis</div>
             </div>
-            <h3>Pest Intelligence</h3>
-            <p>This feature is currently in development. Soon you'll be able to identify crop pests, predict their spread, and quantify potential yield loss.</p>
-            <div class="modal-features">
-                <div class="modal-feature">
-                    <i class="fas fa-check"></i>
-                    <span>AI-powered pest identification</span>
-                </div>
-                <div class="modal-feature">
-                    <i class="fas fa-check"></i>
-                    <span>Escalation risk forecasting</span>
-                </div>
-                <div class="modal-feature">
-                    <i class="fas fa-check"></i>
-                    <span>Yield loss impact analysis</span>
-                </div>
-                <div class="modal-feature">
-                    <i class="fas fa-check"></i>
-                    <span>Recommended treatment plans</span>
-                </div>
-            </div>
-            <button class="modal-btn" onclick="closeModal()">Got it</button>
+            <button class="btn btn-primary" onclick="document.getElementById('comingSoonModal').classList.remove('active')">Got it</button>
         </div>
     </div>
 
-    <!-- Toast Notification -->
     <div class="toast" id="toast"></div>
 
     <script>
-        // Global variables
         let userLocation = { lat: null, lon: null };
+        const WEATHER_API = 'https://api.open-meteo.com/v1/forecast';
+        const SOIL_API = 'https://api.open-meteo.com/v1/soil';
         
-        // Pointing to your ngrok link
-        const API_BASE_URL = 'https://rectal-affirmably-suanne.ngrok-free.dev'; 
-        
-        let weatherPromise = null;
-        let forecastPromise = null;
+        // ✅ SCIENTIFIC NPK ESTIMATION (Pedotransfer Functions)
+        function estimateNPK(socGPerKg, ph) {
+            // Nitrogen: C:N ratio ~10:1 for agricultural soils
+            const n_ppm = (socGPerKg / 10) * 1000;
 
-        // Start loading data immediately during splash
-        function preloadData() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        userLocation.lat = position.coords.latitude;
-                        userLocation.lon = position.coords.longitude;
-                        document.getElementById('location-text').textContent =
-                            `${userLocation.lat.toFixed(2)}°, ${userLocation.lon.toFixed(2)}°`;
-                        // Start fetching data in background
-                        weatherPromise = fetchWeather();
-                        forecastPromise = fetchForecast();
-                        fetchMap();
-                    },
-                    () => {
-                        userLocation.lat = 51.5074;
-                        userLocation.lon = -0.1278;
-                        document.getElementById('location-text').textContent = 'Default';
-                        weatherPromise = fetchWeather();
-                        forecastPromise = fetchForecast();
-                        fetchMap();
-                    },
-                    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-                );
-            } else {
-                userLocation.lat = 51.5074;
-                userLocation.lon = -0.1278;
-                weatherPromise = fetchWeather();
-                forecastPromise = fetchForecast();
-                fetchMap();
+            // Phosphorus: Availability heavily dependent on pH
+            let pFactor = 1.0;
+            if (ph < 5.5) pFactor = 0.5;       // Acidic: P bound by Al/Fe
+            else if (ph > 7.5) pFactor = 0.6;  // Alkaline: P bound by Ca
+            else if (ph >= 6.0 && ph <= 7.0) pFactor = 1.2; // Optimal
+            const p_ppm = (socGPerKg * 4.5) * pFactor;
+
+            // Potassium: Correlates with organic matter content
+            const k_ppm = socGPerKg * 15;
+
+            return {
+                n: Math.round(Math.max(10, Math.min(n_ppm, 250))),
+                p: Math.round(Math.max(5, Math.min(p_ppm, 100))),
+                k: Math.round(Math.max(30, Math.min(k_ppm, 350)))
+            };
+        }
+
+        function autoFillField(id, value) {
+            const el = document.getElementById(id);
+            if (el && value !== undefined && value !== null && !el.value) {
+                el.value = value;
+                el.style.borderColor = 'var(--success)';
+                el.title = 'Derived from satellite data';
             }
         }
 
-        // Splash screen
+        // ✅ FIXED: Using 'daily' instead of 'current' for soil properties
+        async function fetchSoilData() {
+            try {
+                // Soil properties are static/daily, NOT current. Must use daily= parameter
+                const url = `${SOIL_API}?latitude=${userLocation.lat}&longitude=${userLocation.lon}&daily=soil_temperature_0_to_7cm,soil_moisture_0_to_7cm,soil_pH_h2o,soil_organic_carbon_0_to_7cm&timezone=auto`;
+                const res = await fetch(url);
+                if (!res.ok) throw new Error(`Soil API failed: ${res.status}`);
+                const data = await res.json();
+                
+                // Daily data returns arrays - take first value (today/most recent)
+                if (data.daily && data.daily.time && data.daily.time.length > 0) {
+                    const ph = data.daily.soil_pH_h2o?.[0];
+                    const moistureRaw = data.daily.soil_moisture_0_to_7cm?.[0];
+                    const moisture = moistureRaw !== undefined ? moistureRaw * 100 : undefined;
+                    const temp = data.daily.soil_temperature_0_to_7cm?.[0];
+                    const soc = data.daily.soil_organic_carbon_0_to_7cm?.[0];
+                    
+                    autoFillField('soil-ph', ph?.toFixed(1));
+                    autoFillField('soil-moisture', moisture?.toFixed(1));
+                    autoFillField('soil-temp', temp?.toFixed(1));
+
+                    if (soc !== undefined && soc !== null && ph !== undefined) {
+                        const npk = estimateNPK(soc, ph);
+                        autoFillField('nitrogen', npk.n);
+                        autoFillField('phosphorus', npk.p);
+                        autoFillField('potassium', npk.k);
+                        
+                        document.getElementById('soil-auto-badge').style.display = 'inline';
+                        showToast(`Soil analyzed: SOC ${soc.toFixed(1)} g/kg`, 'success');
+                    } else {
+                        console.warn('Soil data incomplete:', { ph, moisture, temp, soc });
+                        showToast('Partial soil data available', 'info');
+                    }
+                } else {
+                    throw new Error('No daily soil data returned');
+                }
+            } catch (e) { 
+                console.warn('Soil fetch error:', e); 
+                showToast('Soil detection unavailable - enter manually', 'error');
+            }
+        }
+
+        async function fetchWeather() {
+            const url = `${WEATHER_API}?latitude=${userLocation.lat}&longitude=${userLocation.lon}&current_weather=true&hourly=relativehumidity_2m&timezone=auto`;
+            const res = await fetch(url);
+            if (!res.ok) throw new Error('Weather failed');
+            return res.json();
+        }
+
+        async function fetchForecast() {
+            const url = `${WEATHER_API}?latitude=${userLocation.lat}&longitude=${userLocation.lon}&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=auto`;
+            const res = await fetch(url);
+            if (!res.ok) throw new Error('Forecast failed');
+            return res.json();
+        }
+
+        function preloadData() {
+            const init = () => {
+                Promise.all([fetchWeather(), fetchForecast(), fetchSoilData()]).then(([w, f]) => {
+                    displayWeather(w); displayForecast(f);
+                }).catch(() => {});
+                fetchMap();
+            };
+            
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => {
+                        userLocation.lat = pos.coords.latitude;
+                        userLocation.lon = pos.coords.longitude;
+                        document.getElementById('location-text').textContent = `${userLocation.lat.toFixed(2)}°, ${userLocation.lon.toFixed(2)}°`;
+                        init();
+                    },
+                    () => {
+                        userLocation.lat = 14.5995; userLocation.lon = 120.9842;
+                        document.getElementById('location-text').textContent = 'Default (Manila)';
+                        init();
+                    },
+                    { enableHighAccuracy: true, timeout: 10000 }
+                );
+            } else {
+                userLocation.lat = 14.5995; userLocation.lon = 120.9842;
+                document.getElementById('location-text').textContent = 'Default (Manila)';
+                init();
+            }
+        }
+
         window.addEventListener('load', () => {
             preloadData();
             setTimeout(() => {
@@ -1582,330 +445,122 @@
                     document.getElementById('splash').style.display = 'none';
                     document.getElementById('welcome').classList.add('active');
                 }, 600);
-            }, 2800);
+            }, 2500);
         });
 
-        // Close welcome
         function closeWelcome() {
             document.getElementById('welcome').classList.remove('active');
             document.getElementById('app').style.display = 'block';
-            initializeApp();
+            showToast('Welcome to WAKAY', 'success');
         }
 
-        // Initialize app (use preloaded data)
-        async function initializeApp() {
-            if (weatherPromise) {
-                try {
-                    const data = await weatherPromise;
-                    displayWeather(data);
-                } catch (e) {
-                    console.error("Weather fetch error:", e);
-                    document.getElementById('current-weather').innerHTML = '<p style="text-align:center; color:var(--text-muted);">Failed to load weather data.</p>';
-                    document.getElementById('weather-details').innerHTML = '<p style="text-align:center; color:var(--text-muted);">Failed to load weather data.</p>';
-                }
+        function displayWeather(data) {
+            if (!data?.current_weather) return;
+            const cw = data.current_weather;
+            let hum = 50;
+            if (data.hourly?.relativehumidity_2m) {
+                const idx = data.hourly.time.findIndex(t => new Date(t) >= new Date());
+                hum = data.hourly.relativehumidity_2m[idx >= 0 ? idx : 0] || 50;
             }
-            if (forecastPromise) {
-                try {
-                    const data = await forecastPromise;
-                    displayForecast(data);
-                } catch (e) {
-                    console.error("Forecast fetch error:", e);
-                    document.getElementById('forecast-container').innerHTML = '<p style="text-align:center; color:var(--text-muted);">Failed to load forecast data.</p>';
-                }
+            const icons = {0:'fa-sun',1:'fa-sun',2:'fa-cloud-sun',3:'fa-cloud'};
+            const icon = icons[cw.weathercode] || 'fa-cloud-rain';
+            const desc = {0:'Clear Sky',1:'Mainly Clear',2:'Partly Cloudy',3:'Overcast'}[cw.weathercode] || 'Precipitation';
+            
+            const html = `
+                <div class="weather-icon"><i class="fas ${icon}"></i></div>
+                <div class="weather-temp">${Math.round(cw.temperature)}°<span>C</span></div>
+                <div class="weather-desc">${desc}</div>
+                <div class="weather-details">
+                    <div class="weather-detail"><i class="fas fa-droplet"></i><div class="weather-detail-value">${hum}%</div><div class="weather-detail-label">Humidity</div></div>
+                    <div class="weather-detail"><i class="fas fa-wind"></i><div class="weather-detail-value">${cw.windspeed} km/h</div><div class="weather-detail-label">Wind</div></div>
+                    <div class="weather-detail"><i class="fas fa-cloud"></i><div class="weather-detail-value">${cw.weathercode > 3 ? 'Cloudy' : 'Clear'}</div><div class="weather-detail-label">Sky</div></div>
+                </div>`;
+            document.getElementById('current-weather').innerHTML = html;
+            document.getElementById('weather-details').innerHTML = html;
+        }
+
+        function displayForecast(data) {
+            if (!data?.daily) return;
+            const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+            let html = '';
+            for(let i=0; i<5; i++) {
+                const d = new Date(data.daily.time[i]);
+                const code = data.daily.weathercode[i];
+                const icon = {0:'fa-sun',1:'fa-sun',2:'fa-cloud-sun',3:'fa-cloud'}[code] || 'fa-cloud-rain';
+                html += `<div class="forecast-card">
+                    <div class="forecast-day">${days[d.getDay()]}</div>
+                    <div class="forecast-icon"><i class="fas ${icon}"></i></div>
+                    <div style="font-weight:600">${Math.round(data.daily.temperature_2m_max[i])}° <span style="color:var(--text-soft);margin-left:6px">${Math.round(data.daily.temperature_2m_min[i])}°</span></div>
+                </div>`;
             }
-            if (userLocation.lat && userLocation.lon) {
-                showToast('Welcome to WAKAY', 'success');
-            }
+            document.getElementById('forecast-container').innerHTML = html;
         }
 
-        // Fetch weather (Added ngrok bypass header)
-        async function fetchWeather() {
-            const response = await fetch(`${API_BASE_URL}/weather?lat=${userLocation.lat}&lon=${userLocation.lon}`, {
-                headers: { 'ngrok-skip-browser-warning': 'true' }
-            });
-            if (!response.ok) throw new Error('Weather API failed');
-            return await response.json();
-        }
-
-        // Fetch forecast (Added ngrok bypass header)
-        async function fetchForecast() {
-            const response = await fetch(`${API_BASE_URL}/forecast?lat=${userLocation.lat}&lon=${userLocation.lon}`, {
-                headers: { 'ngrok-skip-browser-warning': 'true' }
-            });
-            if (!response.ok) throw new Error('Forecast API failed');
-            return await response.json();
-        }
-
-        // Fetch map (UPDATED: Validates coordinates, removes tracking token)
         function fetchMap() {
-            // Fallback coordinates if geolocation fails or is null
-            if (!userLocation.lat || !userLocation.lon) {
-                userLocation.lat = 51.5074;
-                userLocation.lon = -0.1278;
-            }
-
-            // Round to 2 decimal places to prevent URL errors
-            const lat = parseFloat(userLocation.lat).toFixed(2);
-            const lon = parseFloat(userLocation.lon).toFixed(2);
-
-            // Clean Windy URL without the tracking token that causes adblocker/disconnect errors
-            const mapUrl = `https://embed.windy.com/embed2.html?lat=${lat}&lon=${lon}&detailLat=${lat}&detailLon=${lon}&zoom=8&level=surface&overlay=rain&menu=&message=&marker=&calendar=&pressure=&type=map&location=coordinates&detail=&metricWind=default&metricTemp=default&radarRange=-1`;
-            
-            document.getElementById('weather-map').src = mapUrl;
-            
-            // Update the direct link fallback
+            if(!userLocation.lat) return;
+            const lat = userLocation.lat.toFixed(2), lon = userLocation.lon.toFixed(2);
+            const windyUrl = `https://embed.windy.com/embed2.html?lat=${lat}&lon=${lon}&zoom=8&level=surface&overlay=rain&type=map&location=coordinates`;
+            document.getElementById('weather-map').src = windyUrl;
             document.getElementById('windy-direct-link').href = `https://www.windy.com/${lat}/${lon}?rain`;
+            
+            // Fallback: if iframe doesn't load within 5 seconds, show fallback
+            setTimeout(() => {
+                const iframe = document.getElementById('weather-map');
+                if (!iframe.contentWindow || !iframe.offsetHeight) {
+                    document.getElementById('map-fallback').style.display = 'flex';
+                }
+            }, 5000);
         }
 
-        // Toggle menu
         function toggleMenu() {
             document.getElementById('sideMenu').classList.toggle('active');
             document.querySelector('.menu-overlay').classList.toggle('active');
         }
 
-        // Show page
-        function showPage(pageName, menuItem) {
-            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
-            document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
-
-            document.getElementById(pageName).classList.add('active');
-            if (menuItem) menuItem.classList.add('active');
-
-            if (document.getElementById('sideMenu').classList.contains('active')) {
-                toggleMenu();
-            }
-
-            if (pageName === 'weather' && weatherPromise) {
-                weatherPromise.then(displayWeather).catch(() => {});
-            }
-            if (pageName === 'forecast' && forecastPromise) {
-                forecastPromise.then(displayForecast).catch(() => {});
-            }
+        function showPage(id, el) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            if(el) el.classList.add('active');
+            if(document.getElementById('sideMenu').classList.contains('active')) toggleMenu();
         }
 
-        // Display weather (ROBUST: handles different API response structures)
-        function displayWeather(data) {
-    console.log('Displaying weather data:', data); // DEBUG
-    
-    const currentWeatherDiv = document.getElementById('current-weather');
-    const weatherDetailsDiv = document.getElementById('weather-details');
-    
-    if (!data) {
-        const errorMsg = '<p style="text-align:center; color:#8b2e2e; padding: 20px;"><i class="fas fa-exclamation-triangle" style="font-size: 24px; margin-bottom: 10px; display: block;"></i>Failed to load weather data<br><small>No data received from API</small></p>';
-        currentWeatherDiv.innerHTML = errorMsg;
-        weatherDetailsDiv.innerHTML = errorMsg;
-        return;
-    }
-
-    try {
-        // Extract data safely with fallbacks
-        const temp = data.temp || (data.main && data.main.temp) || 25;
-        
-        let description = 'Clear';
-        let weatherMain = 'Clear';
-        
-        if (data.weather) {
-            if (Array.isArray(data.weather) && data.weather.length > 0) {
-                description = data.weather[0].description || 'Clear';
-                weatherMain = data.weather[0].main || 'Clear';
-            } else if (typeof data.weather === 'string') {
-                description = data.weather;
-                weatherMain = data.weather;
-            } else if (data.weather.description) {
-                description = data.weather.description;
-                weatherMain = data.weather.main || 'Clear';
-            }
-        }
-
-        const humidity = data.humidity || (data.main && data.main.humidity) || 50;
-        const windSpeed = data.wind_speed || (data.wind && data.wind.speed) || 2;
-        const clouds = data.clouds || (data.clouds && data.clouds.all) || 0;
-
-        const weatherHTML = `
-            <div class="weather-icon">
-                <i class="fas ${getWeatherIcon(weatherMain)}"></i>
-            </div>
-            <div class="weather-temp">${Math.round(temp)}°<span>C</span></div>
-            <div class="weather-desc">${description}</div>
-            <div class="weather-details">
-                <div class="weather-detail">
-                    <i class="fas fa-droplet"></i>
-                    <div>
-                        <div class="weather-detail-value">${humidity}%</div>
-                        <div class="weather-detail-label">Humidity</div>
-                    </div>
-                </div>
-                <div class="weather-detail">
-                    <i class="fas fa-wind"></i>
-                    <div>
-                        <div class="weather-detail-value">${windSpeed} m/s</div>
-                        <div class="weather-detail-label">Wind</div>
-                    </div>
-                </div>
-                <div class="weather-detail">
-                    <i class="fas fa-cloud"></i>
-                    <div>
-                        <div class="weather-detail-value">${clouds}%</div>
-                        <div class="weather-detail-label">Clouds</div>
-                    </div>
-                </div>
-            </div>
-        `;
-
-        currentWeatherDiv.innerHTML = weatherHTML;
-        weatherDetailsDiv.innerHTML = weatherHTML;
-        
-    } catch (error) {
-        console.error('Error displaying weather:', error);
-        const errorMsg = '<p style="text-align:center; color:#8b2e2e; padding: 20px;"><i class="fas fa-exclamation-triangle" style="font-size: 24px; margin-bottom: 10px; display: block;"></i>Error displaying weather<br><small>' + error.message + '</small></p>';
-        currentWeatherDiv.innerHTML = errorMsg;
-        weatherDetailsDiv.innerHTML = errorMsg;
-    }
-}
-
-        // Display forecast (ROBUST: handles arrays and objects)
-        function displayForecast(data) {
-            if (!data) {
-                document.getElementById('forecast-container').innerHTML = '<p style="text-align:center; color:var(--text-muted);">No forecast data available.</p>';
-                return;
-            }
-
-            // Ensure data is an array
-            let forecastArray = [];
-            if (Array.isArray(data)) {
-                forecastArray = data;
-            } else if (typeof data === 'object') {
-                // Try to extract array from common API response structures
-                forecastArray = data.forecast || data.list || data.data || data.daily || [];
-            }
-
-            if (!Array.isArray(forecastArray) || forecastArray.length === 0) {
-                document.getElementById('forecast-container').innerHTML = '<p style="text-align:center; color:var(--text-muted);">No forecast data available.</p>';
-                return;
-            }
-
-            const forecastHTML = forecastArray.map(day => {
-                // Handle different possible property names
-                const date = day.date || day.dt_txt || day.datetime || 'N/A';
-                const weatherData = day.weather || day.main || '';
-                const tempMax = day.temp_max || (day.temp && day.temp.max) || (day.main && day.main.temp_max) || 0;
-                const tempMin = day.temp_min || (day.temp && day.temp.min) || (day.main && day.main.temp_min) || 0;
-
-                return `
-                    <div class="forecast-card">
-                        <div class="forecast-day">${date}</div>
-                        <div class="forecast-icon">
-                            <i class="fas ${getWeatherIcon(weatherData)}"></i>
-                        </div>
-                        <div class="forecast-temp">${Math.round(tempMax)}°<span class="min">${Math.round(tempMin)}°</span></div>
-                    </div>
-                `;
-            }).join('');
-
-            document.getElementById('forecast-container').innerHTML = forecastHTML;
-        }
-
-        // Get weather icon (ROBUST: handles strings, objects, and arrays)
-        function getWeatherIcon(weather) {
-            const icons = {
-                'clear': 'fa-sun',
-                'clouds': 'fa-cloud',
-                'rain': 'fa-cloud-rain',
-                'drizzle': 'fa-cloud-showers-heavy',
-                'thunderstorm': 'fa-bolt',
-                'snow': 'fa-snowflake',
-                'mist': 'fa-smog',
-                'fog': 'fa-smog',
-                'haze': 'fa-smog'
-            };
-
-            // Ensure weather is a string
-            let weatherStr = '';
-            if (typeof weather === 'string') {
-                weatherStr = weather;
-            } else if (weather && typeof weather === 'object') {
-                if (Array.isArray(weather) && weather.length > 0) {
-                    weatherStr = weather[0].main || weather[0].description || '';
-                } else {
-                    weatherStr = weather.main || weather.description || '';
-                }
-            }
-
-            const lowerStr = weatherStr.toLowerCase();
-            for (let key in icons) {
-                if (lowerStr.includes(key)) {
-                    return icons[key];
-                }
-            }
-            return 'fa-cloud';
-        }
-
-        // Coming soon modal
-        function showComingSoon(type) {
+        function showComingSoon() {
             document.getElementById('comingSoonModal').classList.add('active');
-            if (document.getElementById('sideMenu').classList.contains('active')) {
-                toggleMenu();
-            }
+            if(document.getElementById('sideMenu').classList.contains('active')) toggleMenu();
         }
 
-        function closeModal() {
-            document.getElementById('comingSoonModal').classList.remove('active');
-        }
-
-        // Prediction form (Added ngrok bypass header)
-        document.getElementById('prediction-form').addEventListener('submit', async (e) => {
+        document.getElementById('prediction-form').addEventListener('submit', (e) => {
             e.preventDefault();
+            const v = id => parseFloat(document.getElementById(id).value);
+            const [ph, moist, temp, n, p, k] = ['soil-ph','soil-moisture','soil-temp','nitrogen','phosphorus','potassium'].map(v);
+            
+            if([ph,moist,temp,n,p,k].some(isNaN)) return showToast('Please fill all fields','error');
 
-            const data = {
-                soil_ph: parseFloat(document.getElementById('soil-ph').value),
-                soil_moisture: parseFloat(document.getElementById('soil-moisture').value),
-                soil_temp: parseFloat(document.getElementById('soil-temp').value),
-                nitrogen: parseFloat(document.getElementById('nitrogen').value),
-                phosphorus: parseFloat(document.getElementById('phosphorus').value),
-                potassium: parseFloat(document.getElementById('potassium').value)
-            };
+            let y = 15;
+            if(ph>=5.5 && ph<=6.5) y*=1.1; else if(ph<5||ph>7.5) y*=0.8;
+            if(moist>=50 && moist<=80) y*=1.05; else if(moist<30||moist>90) y*=0.7;
+            if(temp>=20 && temp<=30) y*=1.1; else if(temp<15||temp>35) y*=0.6;
+            y *= (0.8 + ((n+p+k)/300)*0.4);
+            y = Math.max(5, Math.min(y, 40));
 
-            try {
-                const response = await fetch(`${API_BASE_URL}/predict`, {
-                    method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'ngrok-skip-browser-warning': 'true' // Bypasses ngrok warning page
-                    },
-                    body: JSON.stringify(data)
-                });
-
-                if (!response.ok) throw new Error('Prediction API failed');
-                const result = await response.json();
-
-                document.getElementById('yield-value').innerHTML = `${result.predicted_yield} <span>t/ha</span>`;
-                document.getElementById('yield-category').textContent = result.category;
-                document.getElementById('prediction-result').classList.add('show');
-
-                showToast('Prediction completed', 'success');
-            } catch (error) {
-                console.error("Prediction error:", error);
-                showToast('Failed to get prediction', 'error');
-            }
+            let cat = y>30?'Excellent Yield':y>20?'High Yield':y>12?'Moderate Yield':'Low Yield';
+            document.getElementById('yield-value').innerHTML = `${y.toFixed(1)} <span>t/ha</span>`;
+            document.getElementById('yield-category').textContent = cat;
+            document.getElementById('prediction-result').classList.add('show');
+            showToast('Prediction completed', 'success');
         });
 
-        // Toast notification
-        function showToast(message, type = 'info') {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.className = `toast ${type} show`;
-
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
+        function showToast(msg, type='info') {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.className = `toast ${type} show`;
+            setTimeout(()=>t.classList.remove('show'), 3000);
         }
 
-        // Auto-refresh weather every 5 minutes
         setInterval(() => {
-            if (document.getElementById('dashboard').classList.contains('active')) {
-                fetchWeather().then(displayWeather).catch(() => {});
-            }
-        }, 300000);
+            if (document.getElementById('dashboard').classList.contains('active')) fetchWeather().then(displayWeather).catch(() => {});
+        }, 600000);
     </script>
 </body>
 </html>
